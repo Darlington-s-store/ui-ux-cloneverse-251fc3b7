@@ -1,9 +1,9 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Heart, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProducts, Product } from '../../context/ProductsContext';
+import ProductImages from './ProductImages';
 
 interface ProductDetailProps {
   product: Product;
@@ -13,7 +13,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[1] || '');
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
   
   const { addToCart, addToWishlist } = useProducts();
   
@@ -39,39 +38,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
     toast.success(`${product.name} added to wishlist`);
   };
   
-  // Create an array of images if there's only one
-  const images = Array.isArray(product.images) ? product.images : [product.image];
-  
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
       {/* Product Images */}
-      <div>
-        <div className="aspect-square bg-gray-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-          <img
-            src={images[activeImage] || product.image}
-            alt={product.name}
-            className="max-h-full max-w-full object-contain"
-          />
-        </div>
-        
-        <div className="grid grid-cols-4 gap-4">
-          {images.map((image, index) => (
-            <div
-              key={index}
-              className={`aspect-square bg-gray-100 rounded-lg cursor-pointer ${
-                activeImage === index ? 'ring-2 ring-exclusive' : ''
-              }`}
-              onClick={() => setActiveImage(index)}
-            >
-              <img
-                src={image}
-                alt={`${product.name} - view ${index + 1}`}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <ProductImages 
+        images={product.images || []} 
+        defaultImage={product.image} 
+        name={product.name}
+      />
       
       {/* Product Info */}
       <div>

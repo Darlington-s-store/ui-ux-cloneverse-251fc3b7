@@ -37,7 +37,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping }) => {
         to="/checkout"
         className="block text-center bg-exclusive text-white py-3 px-4 rounded-md hover:bg-exclusive-dark transition-colors w-full"
       >
-        Process to checkout
+        Proceed to checkout
       </Link>
     </div>
   );

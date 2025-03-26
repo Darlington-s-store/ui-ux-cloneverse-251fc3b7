@@ -1,104 +1,85 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import CartItem from '../components/cart/CartItem';
 import CartSummary from '../components/cart/CartSummary';
 import { useProducts } from '../context/ProductsContext';
+import { toast } from 'sonner';
 
 const Cart = () => {
-  const { cartItems, updateCartQuantity, removeFromCart, getCartTotal } = useProducts();
-  const [couponCode, setCouponCode] = useState('');
+  const { cartItems, removeFromCart, updateCartQuantity, getCartTotal } = useProducts();
+  const [shippingCost, setShippingCost] = useState<number | 'Free'>(0);
   
-  // Calculate subtotal
+  const handleUpdateQuantity = (id: string, quantity: number) => {
+    updateCartQuantity(id, quantity);
+  };
+  
+  const handleRemoveItem = (id: string, name: string) => {
+    removeFromCart(id);
+    toast.success(`${name} removed from cart`);
+  };
+  
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty!');
+      return;
+    }
+    // Checkout logic here
+  };
+  
   const subtotal = getCartTotal();
-  
-  // Apply coupon code
-  const handleApplyCoupon = () => {
-    // Coupon logic would go here
-    toast.info("Coupon feature coming soon!");
-  };
-  
-  // Update cart
-  const handleUpdateCart = () => {
-    toast.success("Cart updated successfully!");
-  };
   
   return (
     <Layout>
-      <Breadcrumb items={[{ label: 'Cart', path: '/cart' }]} />
+      <Breadcrumb 
+        items={[
+          { label: 'Home', path: '/' },
+          { label: 'Cart', path: '/cart' }
+        ]} 
+      />
       
-      <div className="container-custom py-10">
+      <div className="container-custom py-12">
+        <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+        
         {cartItems.length === 0 ? (
-          <div className="text-center py-20">
-            <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">Looks like you haven't added anything to your cart yet.</p>
-            <Link to="/" className="btn-primary inline-block">
+          <div className="text-center py-16">
+            <h2 className="text-2xl font-medium mb-4">Your cart is empty</h2>
+            <p className="text-gray-600 mb-8">
+              Looks like you haven't added anything to your cart yet.
+            </p>
+            <a href="/" className="btn-primary">
               Continue Shopping
-            </Link>
+            </a>
           </div>
         ) : (
-          <div>
-            <div className="overflow-x-auto">
-              <div className="min-w-[900px]">
-                <div className="grid grid-cols-4 gap-6 pb-4 border-b border-gray-200">
-                  <div className="col-span-1">Product</div>
-                  <div className="col-span-1">Price</div>
-                  <div className="col-span-1">Quantity</div>
-                  <div className="col-span-1 text-right">Subtotal</div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                <div className="grid grid-cols-12 border-b border-gray-200 p-4 bg-gray-50 text-sm font-medium text-gray-600">
+                  <div className="col-span-6">Product</div>
+                  <div className="col-span-2 text-center">Price</div>
+                  <div className="col-span-2 text-center">Quantity</div>
+                  <div className="col-span-2 text-right">Subtotal</div>
                 </div>
                 
-                <div className="divide-y divide-gray-200">
-                  {cartItems.map(item => (
-                    <CartItem
-                      key={item.id}
-                      id={item.id}
-                      name={item.name}
-                      price={item.price}
-                      image={item.image}
-                      quantity={item.quantity}
-                      onUpdateQuantity={updateCartQuantity}
-                      onRemove={removeFromCart}
-                    />
-                  ))}
-                </div>
+                {cartItems.map((item) => (
+                  <CartItem
+                    key={item.id}
+                    id={item.id}
+                    name={item.name}
+                    price={item.price}
+                    image={item.image}
+                    quantity={item.quantity}
+                    onUpdateQuantity={handleUpdateQuantity}
+                    onRemove={handleRemoveItem}
+                  />
+                ))}
               </div>
             </div>
             
-            <div className="flex flex-col md:flex-row justify-between mt-10 gap-8">
-              <div className="md:w-1/2 lg:w-1/3">
-                <div className="flex space-x-4">
-                  <Link to="/" className="btn-secondary flex-1">
-                    Return To Shop
-                  </Link>
-                  <button onClick={handleUpdateCart} className="btn-secondary flex-1">
-                    Update Cart
-                  </button>
-                </div>
-                
-                <div className="mt-6">
-                  <div className="flex space-x-4">
-                    <input
-                      type="text"
-                      placeholder="Coupon Code"
-                      className="input-primary flex-grow"
-                      value={couponCode}
-                      onChange={(e) => setCouponCode(e.target.value)}
-                    />
-                    <button
-                      onClick={handleApplyCoupon}
-                      className="bg-exclusive hover:bg-exclusive-dark text-white py-2 px-6 rounded-md transition-colors"
-                    >
-                      Apply Coupon
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:w-1/2 lg:w-1/3">
-                <CartSummary subtotal={subtotal} shipping="Free" />
-              </div>
+            <div>
+              <CartSummary subtotal={subtotal} shipping={shippingCost} />
             </div>
           </div>
         )}

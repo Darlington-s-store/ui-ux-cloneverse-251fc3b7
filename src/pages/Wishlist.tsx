@@ -3,6 +3,7 @@ import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import WishlistItem from '../components/wishlist/WishlistItem';
 import { useProducts } from '../context/ProductsContext';
+import { toast } from 'sonner';
 
 const Wishlist = () => {
   const { wishlistItems, removeFromWishlist, addToCart, getProductById } = useProducts();
@@ -11,6 +12,15 @@ const Wishlist = () => {
     const product = getProductById(id);
     if (product) {
       addToCart(product);
+      toast.success(`${product.name} added to cart`);
+    }
+  };
+  
+  const handleRemoveItem = (id: string) => {
+    const item = wishlistItems.find(item => item.id === id);
+    if (item) {
+      removeFromWishlist(id);
+      toast.success(`${item.name} removed from wishlist`);
     }
   };
   
@@ -47,7 +57,7 @@ const Wishlist = () => {
                 oldPrice={item.oldPrice}
                 image={item.image}
                 discountPercentage={item.discountPercentage}
-                onRemove={removeFromWishlist}
+                onRemove={handleRemoveItem}
                 onAddToCart={handleAddToCart}
               />
             ))}

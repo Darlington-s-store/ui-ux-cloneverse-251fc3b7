@@ -1,4 +1,3 @@
-
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 // Product Types
@@ -8,6 +7,7 @@ export interface Product {
   price: number;
   oldPrice?: number;
   image: string;
+  images?: string[];
   rating: number;
   reviewCount: number;
   discountPercentage?: number;
@@ -65,6 +65,11 @@ const initialProducts: Product[] = [
     price: 120,
     oldPrice: 160,
     image: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
+    images: [
+      '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
+      '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
+      '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png'
+    ],
     rating: 4.7,
     reviewCount: 88,
     discountPercentage: 40,
@@ -80,6 +85,10 @@ const initialProducts: Product[] = [
     price: 900,
     oldPrice: 1160,
     image: '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png',
+    images: [
+      '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png',
+      '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png'
+    ],
     rating: 4.5,
     reviewCount: 75,
     discountPercentage: 35,
@@ -94,6 +103,10 @@ const initialProducts: Product[] = [
     price: 370, 
     oldPrice: 400,
     image: '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png',
+    images: [
+      '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png',
+      '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png'
+    ],
     rating: 4.8,
     reviewCount: 99,
     discountPercentage: 30,
@@ -108,6 +121,9 @@ const initialProducts: Product[] = [
     price: 160,
     oldPrice: 170,
     image: '/lovable-uploads/06242eff-edaf-4101-aff1-9f5cef6a3a40.png',
+    images: [
+      '/lovable-uploads/06242eff-edaf-4101-aff1-9f5cef6a3a40.png'
+    ],
     rating: 4.6,
     reviewCount: 65,
     category: 'accessories',
@@ -120,6 +136,10 @@ const initialProducts: Product[] = [
     price: 899,
     oldPrice: 999,
     image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    images: [
+      '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+      '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png'
+    ],
     rating: 4.9,
     reviewCount: 120,
     discountPercentage: 10,
@@ -135,6 +155,10 @@ const initialProducts: Product[] = [
     price: 1299,
     oldPrice: 1499,
     image: '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png',
+    images: [
+      '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png',
+      '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png'
+    ],
     rating: 4.7,
     reviewCount: 85,
     discountPercentage: 15,
@@ -149,6 +173,10 @@ const initialProducts: Product[] = [
     price: 159,
     oldPrice: 199,
     image: '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png',
+    images: [
+      '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png',
+      '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png'
+    ],
     rating: 4.6,
     reviewCount: 92,
     discountPercentage: 20,
@@ -164,6 +192,9 @@ const initialProducts: Product[] = [
     price: 129,
     oldPrice: 159,
     image: '/lovable-uploads/ea1f1c80-c58d-43c5-966e-322a915ba87e.png',
+    images: [
+      '/lovable-uploads/ea1f1c80-c58d-43c5-966e-322a915ba87e.png'
+    ],
     rating: 4.5,
     reviewCount: 60,
     discountPercentage: 20,
