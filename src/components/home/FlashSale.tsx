@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import ProductGrid from '../products/ProductGrid';
+import ProductCard from '../products/ProductCard';
 
 const flashSaleProducts = [
   {
