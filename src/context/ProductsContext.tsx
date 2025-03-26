@@ -38,10 +38,28 @@ export interface WishlistItem {
   discountPercentage?: number;
 }
 
+// Order Types
+export interface Order {
+  id: string;
+  date: string;
+  items: CartItem[];
+  total: number;
+  status: 'processing' | 'shipped' | 'delivered';
+  shippingAddress: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+}
+
 interface ProductsContextType {
   products: Product[];
   cartItems: CartItem[];
   wishlistItems: WishlistItem[];
+  orders: Order[];
   addToCart: (product: Product) => void;
   removeFromCart: (id: string) => void;
   updateCartQuantity: (id: string, quantity: number) => void;
@@ -53,6 +71,8 @@ interface ProductsContextType {
   getWishlistCount: () => number;
   getProductById: (id: string) => Product | undefined;
   getProductsByCategory: (category: string) => Product[];
+  placeOrder: (shippingInfo: Order['shippingAddress']) => string;
+  getOrderById: (id: string) => Order | undefined;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -208,14 +228,17 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const [products] = useState<Product[]>(initialProducts);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  // Load cart and wishlist from localStorage
+  // Load cart, wishlist, and orders from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     const savedWishlist = localStorage.getItem('wishlist');
+    const savedOrders = localStorage.getItem('orders');
     
     if (savedCart) setCartItems(JSON.parse(savedCart));
     if (savedWishlist) setWishlistItems(JSON.parse(savedWishlist));
+    if (savedOrders) setOrders(JSON.parse(savedOrders));
   }, []);
 
   // Save cart to localStorage whenever it changes
@@ -227,6 +250,11 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
   }, [wishlistItems]);
+
+  // Save orders to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('orders', JSON.stringify(orders));
+  }, [orders]);
 
   const addToCart = (product: Product) => {
     setCartItems(prev => {
@@ -309,11 +337,36 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return products.filter(product => product.category === category);
   };
 
+  // Place an order
+  const placeOrder = (shippingInfo: Order['shippingAddress']) => {
+    const orderId = `ORD-${Date.now().toString().slice(-6)}`;
+    
+    const newOrder: Order = {
+      id: orderId,
+      date: new Date().toISOString(),
+      items: [...cartItems],
+      total: getCartTotal(),
+      status: 'processing',
+      shippingAddress: shippingInfo
+    };
+    
+    setOrders(prev => [newOrder, ...prev]);
+    clearCart();
+    
+    return orderId;
+  };
+
+  // Get an order by ID
+  const getOrderById = (id: string) => {
+    return orders.find(order => order.id === id);
+  };
+
   return (
     <ProductsContext.Provider value={{
       products,
       cartItems,
       wishlistItems,
+      orders,
       addToCart,
       removeFromCart,
       updateCartQuantity,
@@ -324,7 +377,9 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       getCartCount,
       getWishlistCount,
       getProductById,
-      getProductsByCategory
+      getProductsByCategory,
+      placeOrder,
+      getOrderById
     }}>
       {children}
     </ProductsContext.Provider>

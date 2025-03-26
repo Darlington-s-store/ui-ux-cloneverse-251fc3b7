@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
 import Account from "./pages/Account";
 import Product from "./pages/Product";
 import Wishlist from "./pages/Wishlist";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/signup" element={<SignUp />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/account" element={<Account />} />
             <Route path="/account/profile" element={<Account />} />
             <Route path="/account/wishlist" element={<Wishlist />} />

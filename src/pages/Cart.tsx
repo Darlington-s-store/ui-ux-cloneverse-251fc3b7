@@ -1,15 +1,19 @@
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import CartItem from '../components/cart/CartItem';
 import CartSummary from '../components/cart/CartSummary';
 import { useProducts } from '../context/ProductsContext';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { ShoppingBag } from 'lucide-react';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateCartQuantity, getCartTotal } = useProducts();
   const [shippingCost, setShippingCost] = useState<number | 'Free'>(0);
+  const navigate = useNavigate();
   
   const handleUpdateQuantity = (id: string, quantity: number) => {
     updateCartQuantity(id, quantity);
@@ -28,7 +32,7 @@ const Cart = () => {
       toast.error('Your cart is empty!');
       return;
     }
-    // Checkout logic here
+    navigate('/checkout');
   };
   
   const subtotal = getCartTotal();
@@ -47,13 +51,18 @@ const Cart = () => {
         
         {cartItems.length === 0 ? (
           <div className="text-center py-16">
+            <div className="mb-6 flex justify-center">
+              <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
+                <ShoppingBag className="h-8 w-8 text-gray-500" />
+              </div>
+            </div>
             <h2 className="text-2xl font-medium mb-4">Your cart is empty</h2>
             <p className="text-gray-600 mb-8">
               Looks like you haven't added anything to your cart yet.
             </p>
-            <a href="/" className="btn-primary">
+            <Button onClick={() => navigate('/shop')} className="btn-primary">
               Continue Shopping
-            </a>
+            </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -82,7 +91,11 @@ const Cart = () => {
             </div>
             
             <div>
-              <CartSummary subtotal={subtotal} shipping={shippingCost} />
+              <CartSummary 
+                subtotal={subtotal} 
+                shipping={shippingCost} 
+                onCheckout={handleCheckout}
+              />
             </div>
           </div>
         )}
