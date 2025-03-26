@@ -8,13 +8,6 @@ interface CartSummaryProps {
 }
 
 const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping }) => {
-  const [couponCode, setCouponCode] = useState('');
-  
-  const handleCouponSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle coupon code submission
-  };
-  
   const total = typeof shipping === 'number' ? subtotal + shipping : subtotal;
   
   return (

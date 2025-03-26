@@ -1,6 +1,5 @@
 
 import { useEffect, useState } from 'react';
-import ProductGrid from '../products/ProductGrid';
 import ProductCard from '../products/ProductCard';
 
 const flashSaleProducts = [
@@ -12,7 +11,8 @@ const flashSaleProducts = [
     image: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
     rating: 4.7,
     reviewCount: 88,
-    discountPercentage: 40
+    discountPercentage: 40,
+    category: 'gaming'
   },
   {
     id: '2',
@@ -22,7 +22,8 @@ const flashSaleProducts = [
     image: '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png',
     rating: 4.5,
     reviewCount: 75,
-    discountPercentage: 35
+    discountPercentage: 35,
+    category: 'accessories'
   },
   {
     id: '3',
@@ -32,7 +33,8 @@ const flashSaleProducts = [
     image: '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png',
     rating: 4.8,
     reviewCount: 99,
-    discountPercentage: 30
+    discountPercentage: 30,
+    category: 'monitors'
   },
   {
     id: '4',
@@ -41,7 +43,8 @@ const flashSaleProducts = [
     oldPrice: 170,
     image: '/lovable-uploads/06242eff-edaf-4101-aff1-9f5cef6a3a40.png',
     rating: 4.6,
-    reviewCount: 65
+    reviewCount: 65,
+    category: 'accessories'
   }
 ];
 

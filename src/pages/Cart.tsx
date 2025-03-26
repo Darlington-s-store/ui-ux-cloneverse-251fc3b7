@@ -1,58 +1,28 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import CartItem from '../components/cart/CartItem';
 import CartSummary from '../components/cart/CartSummary';
-
-// Sample cart data
-const initialCartItems = [
-  {
-    id: '1',
-    name: 'LCD Monitor',
-    price: 650,
-    quantity: 1,
-    image: '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png'
-  },
-  {
-    id: '2',
-    name: 'HI Gamepad',
-    price: 550,
-    quantity: 2,
-    image: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png'
-  }
-];
+import { useProducts } from '../context/ProductsContext';
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState(initialCartItems);
+  const { cartItems, updateCartQuantity, removeFromCart, getCartTotal } = useProducts();
   const [couponCode, setCouponCode] = useState('');
   
   // Calculate subtotal
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  
-  // Update item quantity
-  const handleUpdateQuantity = (id: string, quantity: number) => {
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id ? { ...item, quantity } : item
-      )
-    );
-  };
-  
-  // Remove item from cart
-  const handleRemoveItem = (id: string) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
-  };
+  const subtotal = getCartTotal();
   
   // Apply coupon code
   const handleApplyCoupon = () => {
     // Coupon logic would go here
+    toast.info("Coupon feature coming soon!");
   };
   
   // Update cart
   const handleUpdateCart = () => {
-    // Update cart logic would go here
+    toast.success("Cart updated successfully!");
   };
   
   return (
@@ -64,7 +34,7 @@ const Cart = () => {
           <div className="text-center py-20">
             <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
             <p className="text-gray-600 mb-8">Looks like you haven't added anything to your cart yet.</p>
-            <Link to="/shop" className="btn-primary inline-block">
+            <Link to="/" className="btn-primary inline-block">
               Continue Shopping
             </Link>
           </div>
@@ -88,8 +58,8 @@ const Cart = () => {
                       price={item.price}
                       image={item.image}
                       quantity={item.quantity}
-                      onUpdateQuantity={handleUpdateQuantity}
-                      onRemove={handleRemoveItem}
+                      onUpdateQuantity={updateCartQuantity}
+                      onRemove={removeFromCart}
                     />
                   ))}
                 </div>
@@ -99,7 +69,7 @@ const Cart = () => {
             <div className="flex flex-col md:flex-row justify-between mt-10 gap-8">
               <div className="md:w-1/2 lg:w-1/3">
                 <div className="flex space-x-4">
-                  <Link to="/shop" className="btn-secondary flex-1">
+                  <Link to="/" className="btn-secondary flex-1">
                     Return To Shop
                   </Link>
                   <button onClick={handleUpdateCart} className="btn-secondary flex-1">

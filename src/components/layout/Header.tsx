@@ -2,15 +2,20 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, Heart, ShoppingCart, User, ChevronDown } from 'lucide-react';
+import { useProducts } from '../../context/ProductsContext';
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
+  const { getCartCount, getWishlistCount } = useProducts();
+  
+  const cartCount = getCartCount();
+  const wishlistCount = getWishlistCount();
   
   const isActive = (path: string) => location.pathname === path;
   
   return (
-    <header className="py-4 border-b border-gray-200">
+    <header className="py-4 border-b border-gray-200 sticky top-0 bg-white z-40">
       <div className="container-custom">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-12">
@@ -41,12 +46,16 @@ const Header = () => {
             
             <Link to="/wishlist" className="relative">
               <Heart size={22} />
-              <span className="absolute -top-2 -right-2 bg-exclusive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">4</span>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-exclusive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{wishlistCount}</span>
+              )}
             </Link>
             
             <Link to="/cart" className="relative">
               <ShoppingCart size={22} />
-              <span className="absolute -top-2 -right-2 bg-exclusive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">2</span>
+              {cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-exclusive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{cartCount}</span>
+              )}
             </Link>
             
             <Link to="/account" className="relative">

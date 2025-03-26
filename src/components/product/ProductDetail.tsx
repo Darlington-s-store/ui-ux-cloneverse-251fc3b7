@@ -3,21 +3,10 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
+import { useProducts, Product } from '../../context/ProductsContext';
 
 interface ProductDetailProps {
-  product: {
-    id: string;
-    name: string;
-    price: number;
-    oldPrice?: number;
-    description: string;
-    rating: number;
-    reviewCount: number;
-    inStock: boolean;
-    colors?: string[];
-    sizes?: string[];
-    images: string[];
-  };
+  product: Product;
 }
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
@@ -25,6 +14,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [selectedSize, setSelectedSize] = useState(product.sizes?.[1] || '');
   const [quantity, setQuantity] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  
+  const { addToCart, addToWishlist } = useProducts();
   
   const handleIncreaseQuantity = () => {
     setQuantity(prev => prev + 1);
@@ -37,12 +28,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   };
   
   const handleAddToCart = () => {
+    for (let i = 0; i < quantity; i++) {
+      addToCart(product);
+    }
     toast.success(`${product.name} added to cart`);
   };
   
   const handleAddToWishlist = () => {
+    addToWishlist(product);
     toast.success(`${product.name} added to wishlist`);
   };
+  
+  // Create an array of images if there's only one
+  const images = Array.isArray(product.images) ? product.images : [product.image];
   
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
@@ -50,14 +48,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
       <div>
         <div className="aspect-square bg-gray-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden">
           <img
-            src={product.images[activeImage]}
+            src={images[activeImage] || product.image}
             alt={product.name}
             className="max-h-full max-w-full object-contain"
           />
         </div>
         
         <div className="grid grid-cols-4 gap-4">
-          {product.images.map((image, index) => (
+          {images.map((image, index) => (
             <div
               key={index}
               className={`aspect-square bg-gray-100 rounded-lg cursor-pointer ${

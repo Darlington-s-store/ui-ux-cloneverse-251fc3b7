@@ -1,6 +1,6 @@
 
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Category {
@@ -14,20 +14,20 @@ const categories: Category[] = [
   {
     id: '1',
     name: 'Phones',
-    icon: '/lovable-uploads/fe6267c2-6163-4c26-a210-f1a176c9a42b.png',
+    icon: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
     slug: 'phones'
   },
   {
     id: '2',
     name: 'Computers',
-    icon: '/lovable-uploads/f0fc7d28-7a79-4904-87d7-6e5b7080d280.png',
+    icon: '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png',
     slug: 'computers'
   },
   {
     id: '3',
-    name: 'Cameras',
-    icon: '/lovable-uploads/da4cc5ef-1e82-468b-a0b2-af39f932c9ee.png',
-    slug: 'cameras'
+    name: 'Smart Watches',
+    icon: '/lovable-uploads/332148fd-4cee-4cba-a628-e67fc706771e.png',
+    slug: 'smart-watches'
   },
   {
     id: '4',
@@ -38,7 +38,7 @@ const categories: Category[] = [
   {
     id: '5',
     name: 'Gaming',
-    icon: '/lovable-uploads/e7724172-bea3-44f6-8c03-3676808ee472.png',
+    icon: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
     slug: 'gaming'
   },
   {
@@ -51,6 +51,12 @@ const categories: Category[] = [
 
 const CategorySection = () => {
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const navigate = useNavigate();
+  
+  const handleCategoryClick = (category: Category) => {
+    setActiveCategory(category.id);
+    navigate(`/category/${category.slug}`);
+  };
   
   return (
     <div className="container-custom my-16">
@@ -69,20 +75,16 @@ const CategorySection = () => {
       
       <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
         {categories.map((category) => (
-          <Link
+          <div
             key={category.id}
-            to={`/category/${category.slug}`}
-            className={`flex flex-col items-center justify-center py-6 px-4 border rounded-lg hover:border-exclusive transition-colors ${
+            onClick={() => handleCategoryClick(category)}
+            className={`flex flex-col items-center justify-center py-6 px-4 border rounded-lg hover:border-exclusive transition-colors cursor-pointer ${
               activeCategory === category.id ? 'bg-red-50 border-exclusive' : ''
             }`}
-            onClick={(e) => {
-              e.preventDefault();
-              setActiveCategory(category.id);
-            }}
           >
             <img src={category.icon} alt={category.name} className="h-10 w-10 object-contain mb-3" />
             <span className="text-sm font-medium">{category.name}</span>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

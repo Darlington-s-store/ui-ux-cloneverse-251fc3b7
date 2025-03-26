@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, Eye, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
+import { useProducts } from '../../context/ProductsContext';
 
 interface ProductCardProps {
   id: string;
@@ -28,25 +29,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isNew,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const { addToCart, addToWishlist, getProductById } = useProducts();
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Add to cart logic here
-    toast.success(`${name} added to cart`);
+    
+    const product = getProductById(id);
+    if (product) {
+      addToCart(product);
+      toast.success(`${name} added to cart`);
+    }
   };
   
   const handleAddToWishlist = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Add to wishlist logic here
-    toast.success(`${name} added to wishlist`);
+    
+    const product = getProductById(id);
+    if (product) {
+      addToWishlist(product);
+      toast.success(`${name} added to wishlist`);
+    }
   };
   
   const handleQuickView = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    // Quick view logic here
+    // Quick view logic could be implemented here
   };
   
   return (
