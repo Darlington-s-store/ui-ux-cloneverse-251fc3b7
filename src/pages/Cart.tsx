@@ -15,9 +15,12 @@ const Cart = () => {
     updateCartQuantity(id, quantity);
   };
   
-  const handleRemoveItem = (id: string, name: string) => {
-    removeFromCart(id);
-    toast.success(`${name} removed from cart`);
+  const handleRemoveItem = (id: string) => {
+    const item = cartItems.find(item => item.id === id);
+    if (item) {
+      removeFromCart(id);
+      toast.success(`${item.name} removed from cart`);
+    }
   };
   
   const handleCheckout = () => {

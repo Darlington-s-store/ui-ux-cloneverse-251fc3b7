@@ -1,39 +1,32 @@
 
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import CheckoutForm from '../components/checkout/CheckoutForm';
-
-// Sample cart items
-const cartItems = [
-  {
-    id: '1',
-    name: 'LCD Monitor',
-    price: 650,
-    quantity: 1,
-    image: '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png'
-  },
-  {
-    id: '2',
-    name: 'HI Gamepad',
-    price: 550,
-    quantity: 1,
-    image: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png'
-  }
-];
-
-// Calculate subtotal
-const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+import { useProducts } from '../context/ProductsContext';
+import { toast } from 'sonner';
 
 const Checkout = () => {
+  const { cartItems, getCartTotal } = useProducts();
+  const navigate = useNavigate();
+  const subtotal = getCartTotal();
+  
+  // If cart is empty, redirect to cart page
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty. Please add items before checkout.');
+      navigate('/cart');
+    }
+  }, [cartItems, navigate]);
+  
   return (
     <Layout>
       <Breadcrumb 
         items={[
-          { label: 'Account', path: '/account' },
-          { label: 'My Account', path: '/account' },
-          { label: 'Product', path: '/shop' },
-          { label: 'View Cart', path: '/cart' },
-          { label: 'CheckOut', path: '/checkout' }
+          { label: 'Home', path: '/' },
+          { label: 'Cart', path: '/cart' },
+          { label: 'Checkout', path: '/checkout' }
         ]} 
       />
       

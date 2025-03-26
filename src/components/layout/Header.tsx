@@ -24,9 +24,10 @@ const Header = () => {
             </Link>
             <nav className="hidden md:flex items-center space-x-8">
               <Link to="/" className={`${isActive('/') ? 'font-semibold' : ''}`}>Home</Link>
+              <Link to="/shop" className={`${isActive('/shop') ? 'font-semibold' : ''}`}>Shop</Link>
               <Link to="/contact" className={`${isActive('/contact') ? 'font-semibold' : ''}`}>Contact</Link>
               <Link to="/about" className={`${isActive('/about') ? 'font-semibold' : ''}`}>About</Link>
-              <Link to="/signup" className={`${isActive('/signup') ? 'font-semibold' : ''}`}>Sign Up</Link>
+              <Link to="/login" className={`${isActive('/login') ? 'font-semibold' : ''}`}>Login</Link>
             </nav>
           </div>
           
