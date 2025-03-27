@@ -11,7 +11,7 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[1] || '');
+  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]?.name || '');
   const [quantity, setQuantity] = useState(1);
   
   const { addToCart, addToWishlist } = useProducts();
@@ -106,17 +106,17 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               <div className="flex items-center">
                 <span className="text-gray-700 mr-4">Size:</span>
                 <div className="flex space-x-2">
-                  {product.sizes.map((size) => (
+                  {product.sizes.map((sizeObj) => (
                     <button
-                      key={size}
+                      key={sizeObj.name}
                       className={`min-w-[40px] h-10 flex items-center justify-center px-3 text-sm ${
-                        selectedSize === size
+                        selectedSize === sizeObj.name
                           ? 'bg-exclusive text-white'
                           : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                       } rounded-md transition-colors`}
-                      onClick={() => setSelectedSize(size)}
+                      onClick={() => setSelectedSize(sizeObj.name)}
                     >
-                      {size}
+                      {sizeObj.name}
                     </button>
                   ))}
                 </div>
