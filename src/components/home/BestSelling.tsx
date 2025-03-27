@@ -7,7 +7,7 @@ const bestSellingProducts = [
     name: 'Regular Fit Jacket',
     price: 175.99,
     oldPrice: 220,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=736&q=80',
     rating: 4.8,
     reviewCount: 65,
     discountPercentage: 20
@@ -17,7 +17,7 @@ const bestSellingProducts = [
     name: 'Gucci duffle bag',
     price: 960,
     oldPrice: 1160,
-    image: '/lovable-uploads/a8c4deff-ede4-44da-98e8-d0446175b201.png',
+    image: 'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1469&q=80',
     rating: 4.7,
     reviewCount: 55,
     discountPercentage: 35
@@ -27,7 +27,7 @@ const bestSellingProducts = [
     name: 'RGB liquid CPU Cooler',
     price: 160,
     oldPrice: undefined,
-    image: '/lovable-uploads/06242eff-edaf-4101-aff1-9f5cef6a3a40.png',
+    image: 'https://images.unsplash.com/photo-1625315716332-ba5d8b160ffc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
     rating: 4.9,
     reviewCount: 65
   },
@@ -36,7 +36,7 @@ const bestSellingProducts = [
     name: 'Teak Wood Chair',
     price: 80,
     oldPrice: undefined,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    image: 'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
     rating: 4.7,
     reviewCount: 35
   }

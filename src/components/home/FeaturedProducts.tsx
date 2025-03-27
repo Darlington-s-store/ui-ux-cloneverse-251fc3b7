@@ -7,7 +7,7 @@ const featuredProducts = [
     name: 'PS5 Dual Sense',
     price: 89.99,
     oldPrice: 120,
-    image: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
+    image: 'https://images.unsplash.com/photo-1606318801954-d46d46d3360a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
     rating: 4.8,
     reviewCount: 65,
     discountPercentage: 25
@@ -17,7 +17,7 @@ const featuredProducts = [
     name: 'Sony ZV-1 Camera',
     price: 799.99,
     oldPrice: 999.99,
-    image: '/lovable-uploads/da4cc5ef-1e82-468b-a0b2-af39f932c9ee.png',
+    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1638&q=80',
     rating: 4.7,
     reviewCount: 55,
     discountPercentage: 20
@@ -27,7 +27,7 @@ const featuredProducts = [
     name: 'ASUS TUF Gaming Laptop',
     price: 1299.99,
     oldPrice: 1599.99,
-    image: '/lovable-uploads/f0fc7d28-7a79-4904-87d7-6e5b7080d280.png',
+    image: 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1632&q=80',
     rating: 4.9,
     reviewCount: 85,
     discountPercentage: 19
@@ -37,7 +37,7 @@ const featuredProducts = [
     name: 'Cerave Face Wash',
     price: 12.99,
     oldPrice: undefined,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    image: 'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
     rating: 4.6,
     reviewCount: 125
   },
@@ -46,7 +46,7 @@ const featuredProducts = [
     name: 'RC Kids Car Toy',
     price: 99.99,
     oldPrice: undefined,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    image: 'https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=734&q=80',
     rating: 4.7,
     reviewCount: 45,
     isNew: true
@@ -56,7 +56,7 @@ const featuredProducts = [
     name: 'Nike Soccer Cleats',
     price: 129.99,
     oldPrice: undefined,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    image: 'https://images.unsplash.com/photo-1511886929837-354d827aae26?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1564&q=80',
     rating: 4.8,
     reviewCount: 75
   },
@@ -65,7 +65,7 @@ const featuredProducts = [
     name: 'NFL Quilted Jacket',
     price: 189.99,
     oldPrice: undefined,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
+    image: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80',
     rating: 4.5,
     reviewCount: 35
   },
@@ -74,7 +74,7 @@ const featuredProducts = [
     name: 'Wireless Earbuds',
     price: 59.99,
     oldPrice: 79.99,
-    image: '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png',
+    image: 'https://images.unsplash.com/photo-1606741965740-9a829123444f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
     rating: 4.7,
     reviewCount: 95,
     discountPercentage: 25

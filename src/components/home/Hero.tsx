@@ -20,7 +20,7 @@ const slides: Slide[] = [
     subtitle: "Exclusively for new members",
     cta: "Shop Now",
     ctaLink: "/shop",
-    image: "/lovable-uploads/332148fd-4cee-4cba-a628-e67fc706771e.png",
+    image: "https://images.unsplash.com/photo-1661956602944-249bcd04b63f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
     color: "bg-purple-100"
   },
   {
@@ -29,7 +29,7 @@ const slides: Slide[] = [
     subtitle: "Save up to 50% on summer essentials",
     cta: "View Collection",
     ctaLink: "/collection/summer",
-    image: "/lovable-uploads/58a20db1-41ee-4b24-a10c-01079d41be48.png",
+    image: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
     color: "bg-blue-100"
   },
   {
@@ -38,7 +38,7 @@ const slides: Slide[] = [
     subtitle: "Check out our latest products",
     cta: "Discover",
     ctaLink: "/new-arrivals",
-    image: "/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png",
+    image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80",
     color: "bg-green-100"
   }
 ];
