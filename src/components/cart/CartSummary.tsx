@@ -7,9 +7,10 @@ import { toast } from 'sonner';
 interface CartSummaryProps {
   subtotal: number;
   shipping: number | 'Free';
+  onCheckout?: () => void; // Added onCheckout as optional prop
 }
 
-const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping }) => {
+const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, onCheckout }) => {
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState('');
@@ -54,6 +55,13 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping }) => {
     setDiscount(0);
     setAppliedCoupon('');
     toast.success('Coupon removed');
+  };
+
+  // Use the onCheckout prop if provided, otherwise use default Link behavior
+  const handleCheckoutClick = () => {
+    if (onCheckout) {
+      onCheckout();
+    }
   };
   
   return (
@@ -133,12 +141,21 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping }) => {
         <span className="text-gray-800 font-semibold">${total.toFixed(2)}</span>
       </div>
       
-      <Link 
-        to="/checkout"
-        className="block text-center bg-exclusive text-white py-3 px-4 rounded-md hover:bg-exclusive-dark transition-colors w-full"
-      >
-        Proceed to checkout
-      </Link>
+      {onCheckout ? (
+        <button 
+          onClick={handleCheckoutClick}
+          className="block text-center bg-exclusive text-white py-3 px-4 rounded-md hover:bg-exclusive-dark transition-colors w-full"
+        >
+          Proceed to checkout
+        </button>
+      ) : (
+        <Link 
+          to="/checkout"
+          className="block text-center bg-exclusive text-white py-3 px-4 rounded-md hover:bg-exclusive-dark transition-colors w-full"
+        >
+          Proceed to checkout
+        </Link>
+      )}
     </div>
   );
 };

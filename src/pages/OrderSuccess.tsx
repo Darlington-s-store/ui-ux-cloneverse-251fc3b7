@@ -1,14 +1,27 @@
 
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2 } from 'lucide-react';
+import { useProducts } from '../context/ProductsContext';
 
 const OrderSuccess = () => {
   const navigate = useNavigate();
-  const orderNumber = Math.floor(100000 + Math.random() * 900000); // Generate random order number
+  const location = useLocation();
+  const { orders } = useProducts();
+  
+  // Try to get order ID from URL params
+  const searchParams = new URLSearchParams(location.search);
+  const orderId = searchParams.get('orderId');
+  
+  // Get the latest order if no order ID is provided
+  const order = orderId 
+    ? orders.find(o => o.id === orderId) 
+    : orders.length > 0 ? orders[0] : null;
+  
+  const orderNumber = order?.id || Math.floor(100000 + Math.random() * 900000).toString();
   
   useEffect(() => {
     // Scroll to top
@@ -49,6 +62,26 @@ const OrderSuccess = () => {
               You can track your order status in your account dashboard.
             </p>
           </div>
+          
+          {order && (
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-8">
+              <h3 className="font-semibold mb-4">Order Summary</h3>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span>Order Date:</span>
+                  <span>{new Date(order.date).toLocaleDateString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Items:</span>
+                  <span>{order.items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                </div>
+                <div className="flex justify-between font-medium">
+                  <span>Total:</span>
+                  <span>${order.total.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          )}
           
           <div className="flex flex-col md:flex-row gap-4 justify-center">
             <Button onClick={() => navigate('/')} variant="outline">

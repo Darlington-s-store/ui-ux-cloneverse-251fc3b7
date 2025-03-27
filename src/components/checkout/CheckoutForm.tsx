@@ -12,15 +12,20 @@ interface CheckoutFormProps {
   }[];
   subtotal: number;
   shipping: number | 'Free';
+  onPlaceOrder: (shippingInfo: any) => void;
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shipping }) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shipping, onPlaceOrder }) => {
   const [formData, setFormData] = useState({
     firstName: '',
+    lastName: '',
     companyName: '',
     streetAddress: '',
     apartment: '',
     city: '',
+    state: '',
+    zipCode: '',
+    country: 'United States',
     phoneNumber: '',
     email: '',
     saveInfo: false,
@@ -52,8 +57,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
       return;
     }
     
+    // Prepare shipping info for order
+    const shippingInfo = {
+      name: `${formData.firstName} ${formData.lastName}`.trim(),
+      address: formData.streetAddress,
+      apartment: formData.apartment,
+      city: formData.city,
+      state: formData.state || 'CA',
+      zipCode: formData.zipCode,
+      country: formData.country
+    };
+    
     // Process order
-    toast.success('Order placed successfully!');
+    onPlaceOrder(shippingInfo);
   };
   
   const handleApplyCoupon = () => {
@@ -75,7 +91,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
         <h2 className="text-2xl font-semibold mb-6">Billing Details</h2>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">First Name*</label>
               <input
@@ -83,45 +99,59 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className="input-primary"
+                className="input-primary w-full"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Last Name*</label>
               <input
                 type="text"
-                name="companyName"
-                value={formData.companyName}
+                name="lastName"
+                value={formData.lastName}
                 onChange={handleChange}
-                className="input-primary"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Street Address*</label>
-              <input
-                type="text"
-                name="streetAddress"
-                value={formData.streetAddress}
-                onChange={handleChange}
-                className="input-primary"
+                className="input-primary w-full"
                 required
               />
             </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Apartment, floor, etc. (optional)</label>
-              <input
-                type="text"
-                name="apartment"
-                value={formData.apartment}
-                onChange={handleChange}
-                className="input-primary"
-              />
-            </div>
-            
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Company Name (Optional)</label>
+            <input
+              type="text"
+              name="companyName"
+              value={formData.companyName}
+              onChange={handleChange}
+              className="input-primary w-full"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Street Address*</label>
+            <input
+              type="text"
+              name="streetAddress"
+              value={formData.streetAddress}
+              onChange={handleChange}
+              className="input-primary w-full"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Apartment, floor, etc. (optional)</label>
+            <input
+              type="text"
+              name="apartment"
+              value={formData.apartment}
+              onChange={handleChange}
+              className="input-primary w-full"
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Town/City*</label>
               <input
@@ -129,67 +159,108 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="input-primary"
+                className="input-primary w-full"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number*</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
               <input
-                type="tel"
-                name="phoneNumber"
-                value={formData.phoneNumber}
+                type="text"
+                name="state"
+                value={formData.state}
                 onChange={handleChange}
-                className="input-primary"
-                required
+                className="input-primary w-full"
+                placeholder="CA"
               />
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address*</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Zip Code</label>
               <input
-                type="email"
-                name="email"
-                value={formData.email}
+                type="text"
+                name="zipCode"
+                value={formData.zipCode}
                 onChange={handleChange}
-                className="input-primary"
-                required
+                className="input-primary w-full"
               />
             </div>
-            
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="saveInfo"
-                id="saveInfo"
-                checked={formData.saveInfo}
-                onChange={handleChange}
-                className="h-4 w-4 text-exclusive border-gray-300 rounded focus:ring-exclusive"
-              />
-              <label htmlFor="saveInfo" className="ml-2 block text-sm text-gray-700">
-                Save this information for faster check-out next time
-              </label>
-            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+            <input
+              type="text"
+              name="country"
+              value={formData.country}
+              onChange={handleChange}
+              className="input-primary w-full"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number*</label>
+            <input
+              type="tel"
+              name="phoneNumber"
+              value={formData.phoneNumber}
+              onChange={handleChange}
+              className="input-primary w-full"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Email Address*</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="input-primary w-full"
+              required
+            />
+          </div>
+          
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              name="saveInfo"
+              id="saveInfo"
+              checked={formData.saveInfo}
+              onChange={handleChange}
+              className="h-4 w-4 text-exclusive border-gray-300 rounded focus:ring-exclusive"
+            />
+            <label htmlFor="saveInfo" className="ml-2 block text-sm text-gray-700">
+              Save this information for faster check-out next time
+            </label>
           </div>
         </form>
       </div>
       
       {/* Order Summary */}
       <div className="lg:col-span-1">
-        <div className="bg-white p-6 rounded-lg">
+        <div className="bg-white p-6 rounded-lg border border-gray-200">
+          <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
+          
           {/* Cart Items */}
           <div className="space-y-4 mb-6">
             {cartItems.map((item) => (
               <div key={item.id} className="flex items-center">
                 <div className="w-16 h-16 flex-shrink-0 mr-4 relative">
                   <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                  {item.quantity > 1 && (
+                    <span className="absolute -top-2 -right-2 bg-gray-800 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {item.quantity}
+                    </span>
+                  )}
                 </div>
                 <div className="flex-grow">
-                  <h4 className="font-medium">{item.name}</h4>
+                  <h4 className="font-medium text-sm">{item.name}</h4>
                 </div>
                 <div className="flex-shrink-0 ml-4">
-                  <span className="font-semibold">${item.price.toFixed(2)}</span>
+                  <span className="font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
                 </div>
               </div>
             ))}
@@ -213,6 +284,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
           
           {/* Payment Method */}
           <div className="mb-6">
+            <h4 className="font-medium mb-2">Payment Method</h4>
             <div className="flex items-center mb-3">
               <input
                 type="radio"
@@ -267,14 +339,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
                 onClick={handleApplyCoupon}
                 className="bg-exclusive hover:bg-exclusive-dark text-white py-2 px-4 rounded-md transition-colors whitespace-nowrap"
               >
-                Apply Coupon
+                Apply
               </button>
             </div>
           </div>
           
           {/* Place Order Button */}
           <button
-            type="submit"
+            type="button"
             onClick={handleSubmit}
             className="w-full bg-exclusive hover:bg-exclusive-dark text-white py-3 rounded-md transition-colors"
           >
