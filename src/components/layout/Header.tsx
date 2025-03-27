@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, ShoppingCart, Heart, User } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useProducts } from '../../context/ProductsContext';
-import { useMobile } from '../../hooks/use-mobile';
+import { useIsMobile } from '../../hooks/use-mobile';
 
 interface NavItem {
   name: string;
@@ -26,14 +25,12 @@ const Header = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { getCartCount, getWishlistCount } = useProducts();
-  const isMobile = useMobile();
+  const isMobile = useIsMobile();
   
-  // Close menu when changing routes
   useEffect(() => {
     setIsMenuOpen(false);
   }, [location.pathname]);
   
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
@@ -49,7 +46,6 @@ const Header = () => {
     <header className={`sticky top-0 z-40 bg-white transition-shadow ${scrolled ? 'shadow-md' : ''}`}>
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Mobile menu button */}
           <button 
             className="md:hidden p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -57,12 +53,10 @@ const Header = () => {
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           
-          {/* Logo */}
           <Link to="/" className="flex items-center">
             <h1 className="text-xl font-bold text-exclusive">Exclusive</h1>
           </Link>
           
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             {navItems.map((item) => (
               <Link
@@ -77,7 +71,6 @@ const Header = () => {
             ))}
           </nav>
           
-          {/* Search and account actions */}
           <div className="flex items-center space-x-4">
             <Link to="/search">
               <Search size={20} className="text-gray-700 hover:text-exclusive transition-colors" />
@@ -108,7 +101,6 @@ const Header = () => {
         </div>
       </div>
       
-      {/* Mobile Navigation Menu */}
       {isMenuOpen && (
         <div className="md:hidden bg-white absolute top-16 inset-x-0 z-50 shadow-lg">
           <div className="container-custom py-4">
