@@ -1,22 +1,29 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 
 // Product Types
+export interface ProductSize {
+  name: string;
+  price: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   price: number;
   oldPrice?: number;
   image: string;
-  images?: string[];
+  images: string[];
   rating: number;
   reviewCount: number;
   discountPercentage?: number;
   isNew?: boolean;
   category: string;
-  description?: string;
-  inStock?: boolean;
-  colors?: string[];
-  sizes?: string[];
+  description: string;
+  inStock: boolean;
+  colors: string[];
+  sizes: ProductSize[];
+  featured?: boolean;
+  bestSeller?: boolean;
 }
 
 // Cart Types
@@ -26,6 +33,8 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  color?: string;
+  size?: string;
 }
 
 // Wishlist Types
@@ -53,6 +62,7 @@ export interface Order {
     zipCode: string;
     country: string;
   };
+  paymentMethod: string;
 }
 
 interface ProductsContextType {
@@ -60,7 +70,7 @@ interface ProductsContextType {
   cartItems: CartItem[];
   wishlistItems: WishlistItem[];
   orders: Order[];
-  addToCart: (product: Product) => void;
+  addToCart: (product: Product, color?: string, size?: string) => void;
   removeFromCart: (id: string) => void;
   updateCartQuantity: (id: string, quantity: number) => void;
   addToWishlist: (product: Product) => void;
@@ -71,161 +81,19 @@ interface ProductsContextType {
   getWishlistCount: () => number;
   getProductById: (id: string) => Product | undefined;
   getProductsByCategory: (category: string) => Product[];
-  placeOrder: (shippingInfo: Order['shippingAddress']) => string;
+  getFeaturedProducts: () => Product[];
+  getBestSellingProducts: () => Product[];
+  placeOrder: (shippingInfo: Order['shippingAddress'], paymentMethod: string) => string;
   getOrderById: (id: string) => Order | undefined;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
-// Product data
-const initialProducts: Product[] = [
-  {
-    id: '1',
-    name: 'HAVIT HV-G92 Gamepad',
-    price: 120,
-    oldPrice: 160,
-    image: '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
-    images: [
-      '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
-      '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png',
-      '/lovable-uploads/91d41278-66d1-416e-b483-6c1e8f071696.png'
-    ],
-    rating: 4.7,
-    reviewCount: 88,
-    discountPercentage: 40,
-    category: 'gaming',
-    description: 'PlayStation 5 Controller Skin High quality vinyl with air channel adhesive for easy bubble free install & mess free removal Pressure sensitive, easy install & mess free removal.',
-    inStock: true,
-    colors: ['#ffffff', '#ff4d4f', '#000000'],
-    sizes: ['XS', 'S', 'M', 'L', 'XL']
-  },
-  {
-    id: '2',
-    name: 'AK-900 Wired Keyboard',
-    price: 900,
-    oldPrice: 1160,
-    image: '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png',
-    images: [
-      '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png',
-      '/lovable-uploads/cc66bec0-3b2a-46e0-86fc-6c5dda98c02b.png'
-    ],
-    rating: 4.5,
-    reviewCount: 75,
-    discountPercentage: 35,
-    category: 'accessories',
-    description: 'Professional gaming mechanical keyboard with RGB backlight, programmable keys and anti-ghosting technology for a seamless gaming experience.',
-    inStock: true,
-    colors: ['#000000', '#ffffff']
-  },
-  {
-    id: '3',
-    name: 'IPS LCD Gaming Monitor',
-    price: 370, 
-    oldPrice: 400,
-    image: '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png',
-    images: [
-      '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png',
-      '/lovable-uploads/d28aea47-1734-4856-91f0-32ddbf86a52d.png'
-    ],
-    rating: 4.8,
-    reviewCount: 99,
-    discountPercentage: 30,
-    category: 'monitors',
-    description: 'High-performance gaming monitor with 144Hz refresh rate, 1ms response time, and FreeSync technology for smooth gameplay.',
-    inStock: true,
-    colors: ['#000000']
-  },
-  {
-    id: '4',
-    name: 'RGB liquid CPU Cooler',
-    price: 160,
-    oldPrice: 170,
-    image: '/lovable-uploads/06242eff-edaf-4101-aff1-9f5cef6a3a40.png',
-    images: [
-      '/lovable-uploads/06242eff-edaf-4101-aff1-9f5cef6a3a40.png'
-    ],
-    rating: 4.6,
-    reviewCount: 65,
-    category: 'accessories',
-    description: 'Advanced liquid cooling system with RGB lighting effects, quiet operation, and efficient heat dissipation.',
-    inStock: true
-  },
-  {
-    id: '5',
-    name: 'Smartphone X Pro',
-    price: 899,
-    oldPrice: 999,
-    image: '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
-    images: [
-      '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png',
-      '/lovable-uploads/cea6eba3-a8fe-433b-a40f-2582e459b84b.png'
-    ],
-    rating: 4.9,
-    reviewCount: 120,
-    discountPercentage: 10,
-    category: 'phones',
-    isNew: true,
-    description: 'Latest flagship smartphone with advanced camera system, powerful processor, and all-day battery life.',
-    inStock: true,
-    colors: ['#000000', '#ffffff', '#ff4d4f']
-  },
-  {
-    id: '6',
-    name: 'Professional Laptop',
-    price: 1299,
-    oldPrice: 1499,
-    image: '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png',
-    images: [
-      '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png',
-      '/lovable-uploads/45ebd75e-e25e-46e1-96b5-9daae391609b.png'
-    ],
-    rating: 4.7,
-    reviewCount: 85,
-    discountPercentage: 15,
-    category: 'computers',
-    description: 'High-performance laptop for work and entertainment with the latest processors and stunning display.',
-    inStock: true,
-    colors: ['#000000', '#c0c0c0']
-  },
-  {
-    id: '7',
-    name: 'Wireless Earbuds Pro',
-    price: 159,
-    oldPrice: 199,
-    image: '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png',
-    images: [
-      '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png',
-      '/lovable-uploads/4eff34ef-0f14-4e40-9696-f75daac30877.png'
-    ],
-    rating: 4.6,
-    reviewCount: 92,
-    discountPercentage: 20,
-    category: 'headphones',
-    isNew: true,
-    description: 'True wireless earbuds with active noise cancellation, water resistance, and long battery life.',
-    inStock: true,
-    colors: ['#ffffff', '#000000', '#ff4d4f']
-  },
-  {
-    id: '8',
-    name: 'Smart Home Hub',
-    price: 129,
-    oldPrice: 159,
-    image: '/lovable-uploads/ea1f1c80-c58d-43c5-966e-322a915ba87e.png',
-    images: [
-      '/lovable-uploads/ea1f1c80-c58d-43c5-966e-322a915ba87e.png'
-    ],
-    rating: 4.5,
-    reviewCount: 60,
-    discountPercentage: 20,
-    category: 'smart-home',
-    description: 'Central smart home controller compatible with all major smart devices and voice assistants.',
-    inStock: true
-  }
-];
+// Import the expanded product data
+import { expandedProducts } from '../data/products';
 
 export const ProductsProvider = ({ children }: { children: ReactNode }) => {
-  const [products] = useState<Product[]>(initialProducts);
+  const [products] = useState<Product[]>(expandedProducts);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -256,13 +124,29 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('orders', JSON.stringify(orders));
   }, [orders]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = (product: Product, color?: string, size?: string) => {
     setCartItems(prev => {
-      const existingItem = prev.find(item => item.id === product.id);
+      // Get the selected size price or default to product price
+      let itemPrice = product.price;
+      if (size) {
+        const sizeObj = product.sizes.find(s => s.name === size);
+        if (sizeObj) {
+          itemPrice = sizeObj.price;
+        }
+      }
+      
+      // Create a unique identifier for the combination of product, color, and size
+      const itemId = `${product.id}${color ? `-${color}` : ''}${size ? `-${size}` : ''}`;
+      
+      const existingItem = prev.find(item => 
+        item.id === product.id && 
+        item.color === color && 
+        item.size === size
+      );
       
       if (existingItem) {
         return prev.map(item => 
-          item.id === product.id 
+          (item.id === product.id && item.color === color && item.size === size) 
             ? { ...item, quantity: item.quantity + 1 } 
             : item
         );
@@ -270,9 +154,11 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         return [...prev, { 
           id: product.id, 
           name: product.name, 
-          price: product.price, 
+          price: itemPrice, 
           image: product.image, 
-          quantity: 1 
+          quantity: 1,
+          color,
+          size
         }];
       }
     });
@@ -337,8 +223,16 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return products.filter(product => product.category === category);
   };
 
+  const getFeaturedProducts = () => {
+    return products.filter(product => product.featured);
+  };
+
+  const getBestSellingProducts = () => {
+    return products.filter(product => product.bestSeller);
+  };
+
   // Place an order
-  const placeOrder = (shippingInfo: Order['shippingAddress']) => {
+  const placeOrder = (shippingInfo: Order['shippingAddress'], paymentMethod: string) => {
     const orderId = `ORD-${Date.now().toString().slice(-6)}`;
     
     const newOrder: Order = {
@@ -347,7 +241,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       items: [...cartItems],
       total: getCartTotal(),
       status: 'processing',
-      shippingAddress: shippingInfo
+      shippingAddress: shippingInfo,
+      paymentMethod
     };
     
     setOrders(prev => [newOrder, ...prev]);
@@ -378,6 +273,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       getWishlistCount,
       getProductById,
       getProductsByCategory,
+      getFeaturedProducts,
+      getBestSellingProducts,
       placeOrder,
       getOrderById
     }}>

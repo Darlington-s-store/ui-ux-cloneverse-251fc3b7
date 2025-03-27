@@ -1,6 +1,9 @@
 
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { CreditCard, Wallet } from "lucide-react";
 
 interface CheckoutFormProps {
   cartItems: {
@@ -9,10 +12,12 @@ interface CheckoutFormProps {
     price: number;
     quantity: number;
     image: string;
+    color?: string;
+    size?: string;
   }[];
   subtotal: number;
   shipping: number | 'Free';
-  onPlaceOrder: (shippingInfo: any) => void;
+  onPlaceOrder: (shippingInfo: any, paymentMethod: string) => void;
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shipping, onPlaceOrder }) => {
@@ -29,7 +34,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
     phoneNumber: '',
     email: '',
     saveInfo: false,
-    paymentMethod: 'cash', // 'cash' or 'bank'
+    paymentMethod: 'cash', // 'cash', 'credit', or 'paypal'
     couponCode: ''
   });
   
@@ -41,10 +46,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
     }));
   };
   
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleRadioChange = (value: string) => {
     setFormData(prev => ({
       ...prev,
-      paymentMethod: e.target.value
+      paymentMethod: value
     }));
   };
   
@@ -69,7 +74,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
     };
     
     // Process order
-    onPlaceOrder(shippingInfo);
+    onPlaceOrder(shippingInfo, formData.paymentMethod);
   };
   
   const handleApplyCoupon = () => {
@@ -258,6 +263,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
                 </div>
                 <div className="flex-grow">
                   <h4 className="font-medium text-sm">{item.name}</h4>
+                  {item.color && <span className="text-xs text-gray-500">Color: {item.color}</span>}
+                  {item.size && <span className="text-xs text-gray-500 ml-2">Size: {item.size}</span>}
                 </div>
                 <div className="flex-shrink-0 ml-4">
                   <span className="font-semibold">${(item.price * item.quantity).toFixed(2)}</span>
@@ -284,43 +291,42 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
           
           {/* Payment Method */}
           <div className="mb-6">
-            <h4 className="font-medium mb-2">Payment Method</h4>
-            <div className="flex items-center mb-3">
-              <input
-                type="radio"
-                name="paymentMethod"
-                id="bank"
-                value="bank"
-                checked={formData.paymentMethod === 'bank'}
-                onChange={handleRadioChange}
-                className="h-4 w-4 text-exclusive border-gray-300 focus:ring-exclusive"
-              />
-              <label htmlFor="bank" className="ml-2 block text-sm text-gray-700">
-                Bank
-              </label>
-              
-              <div className="ml-auto flex space-x-2">
-                <img src="https://via.placeholder.com/40x25" alt="Bkash" className="h-6" />
-                <img src="https://via.placeholder.com/40x25" alt="Visa" className="h-6" />
-                <img src="https://via.placeholder.com/40x25" alt="Mastercard" className="h-6" />
-                <img src="https://via.placeholder.com/40x25" alt="Nagad" className="h-6" />
+            <h4 className="font-medium mb-3">Payment Method</h4>
+            <RadioGroup
+              value={formData.paymentMethod}
+              onValueChange={handleRadioChange}
+              className="space-y-3"
+            >
+              <div className="flex items-center justify-between space-x-2 p-3 border rounded-md">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="credit" id="credit" />
+                  <Label htmlFor="credit" className="flex items-center gap-2">
+                    <CreditCard size={18} /> Credit Card
+                  </Label>
+                </div>
+                <div className="flex space-x-1">
+                  <img src="https://images.unsplash.com/photo-1542309170-05c06d1703f5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y3JlZGl0JTIwY2FyZHxlbnwwfHwwfHx8MA%3D%3D" alt="Visa" className="h-6 w-auto" />
+                  <img src="https://images.unsplash.com/photo-1588250894213-88a5c6ffd615?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNyZWRpdCUyMGNhcmR8ZW58MHx8MHx8fDA%3D" alt="Mastercard" className="h-6 w-auto" />
+                </div>
               </div>
-            </div>
-            
-            <div className="flex items-center">
-              <input
-                type="radio"
-                name="paymentMethod"
-                id="cash"
-                value="cash"
-                checked={formData.paymentMethod === 'cash'}
-                onChange={handleRadioChange}
-                className="h-4 w-4 text-exclusive border-gray-300 focus:ring-exclusive"
-              />
-              <label htmlFor="cash" className="ml-2 block text-sm text-gray-700">
-                Cash on delivery
-              </label>
-            </div>
+              
+              <div className="flex items-center justify-between space-x-2 p-3 border rounded-md">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="paypal" id="paypal" />
+                  <Label htmlFor="paypal">PayPal</Label>
+                </div>
+                <img src="https://images.unsplash.com/photo-1634403665481-74029226fa95?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHBheXBhbHxlbnwwfHwwfHx8MA%3D%3D" alt="PayPal" className="h-6 w-auto" />
+              </div>
+              
+              <div className="flex items-center justify-between space-x-2 p-3 border rounded-md">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="cash" id="cash" />
+                  <Label htmlFor="cash" className="flex items-center gap-2">
+                    <Wallet size={18} /> Cash on delivery
+                  </Label>
+                </div>
+              </div>
+            </RadioGroup>
           </div>
           
           {/* Coupon Code */}

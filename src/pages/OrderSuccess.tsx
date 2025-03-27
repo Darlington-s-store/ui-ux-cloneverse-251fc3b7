@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, CreditCard, Wallet } from 'lucide-react';
 import { useProducts } from '../context/ProductsContext';
 
 const OrderSuccess = () => {
@@ -27,6 +27,19 @@ const OrderSuccess = () => {
     // Scroll to top
     window.scrollTo(0, 0);
   }, []);
+  
+  // Helper to render payment method icon
+  const renderPaymentMethodIcon = (method: string) => {
+    switch(method) {
+      case 'credit':
+        return <CreditCard className="h-5 w-5 text-green-500 mr-1" />;
+      case 'paypal':
+        return <img src="https://images.unsplash.com/photo-1634403665481-74029226fa95?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHBheXBhbHxlbnwwfHwwfHx8MA%3D%3D" alt="PayPal" className="h-5 w-5 mr-1" />;
+      case 'cash':
+      default:
+        return <Wallet className="h-5 w-5 text-green-500 mr-1" />;
+    }
+  };
   
   return (
     <Layout>
@@ -74,6 +87,14 @@ const OrderSuccess = () => {
                 <div className="flex justify-between">
                   <span>Items:</span>
                   <span>{order.items.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Payment Method:</span>
+                  <span className="flex items-center">
+                    {renderPaymentMethodIcon(order.paymentMethod)}
+                    {order.paymentMethod === 'credit' ? 'Credit Card' : 
+                     order.paymentMethod === 'paypal' ? 'PayPal' : 'Cash on Delivery'}
+                  </span>
                 </div>
                 <div className="flex justify-between font-medium">
                   <span>Total:</span>

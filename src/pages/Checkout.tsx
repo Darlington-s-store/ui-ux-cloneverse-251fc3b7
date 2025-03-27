@@ -19,9 +19,9 @@ const Checkout = () => {
     toast.error('Your cart is empty!');
   }
   
-  const handlePlaceOrder = (shippingInfo: any) => {
+  const handlePlaceOrder = (shippingInfo: any, paymentMethod: string) => {
     const { placeOrder } = useProducts();
-    const orderId = placeOrder(shippingInfo);
+    const orderId = placeOrder(shippingInfo, paymentMethod);
     
     // Redirect to success page with the order ID
     navigate(`/order-success?orderId=${orderId}`);
