@@ -41,8 +41,8 @@ const CategoryPage = () => {
         ]} 
       />
       
-      <div className="container-custom py-12">
-        <h1 className="text-3xl font-bold mb-8">{categoryName}</h1>
+      <div className="container-custom py-8 md:py-12 min-h-[70vh]">
+        <h1 className="text-3xl font-bold mb-6 md:mb-8">{categoryName}</h1>
         
         {categoryProducts.length === 0 ? (
           <div className="text-center py-20">
