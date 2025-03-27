@@ -67,9 +67,9 @@ const Hero = () => {
   };
   
   return (
-    <div className="relative overflow-hidden h-96 md:h-[500px]">
+    <div className="relative overflow-hidden h-[60vh] md:h-[80vh] w-full">
       <div 
-        className="flex transition-transform duration-500 ease-out h-full"
+        className="flex transition-transform duration-500 ease-out h-full w-full"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {slides.map((slide) => (
