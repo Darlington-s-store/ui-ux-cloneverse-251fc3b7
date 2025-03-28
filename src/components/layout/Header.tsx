@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search, ShoppingCart, Heart, User } from 'lucide-react';
@@ -17,7 +18,6 @@ const navItems: NavItem[] = [
   { name: 'Categories', path: '#categories' },
   { name: 'About', path: '/about' },
   { name: 'Contact', path: '/contact' },
-  { name: 'Admin', path: '/admin' },
 ];
 
 const Header = () => {

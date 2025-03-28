@@ -32,7 +32,7 @@ const Banner = () => {
           </div>
           
           <Link 
-            to="/category/headphones" 
+            to="/shop" 
             className="group inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-8 rounded-md transition-colors"
           >
             Shop Headphones
