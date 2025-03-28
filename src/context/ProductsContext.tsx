@@ -1,4 +1,5 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { allProducts, getProductById, getProductsByCategory, getFeaturedProducts, getBestSellingProducts } from '../data';
 
 // Product Types
 export interface ProductSize {
@@ -89,11 +90,8 @@ interface ProductsContextType {
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
-// Import the expanded product data
-import { expandedProducts } from '../data/products';
-
 export const ProductsProvider = ({ children }: { children: ReactNode }) => {
-  const [products] = useState<Product[]>(expandedProducts);
+  const [products] = useState<Product[]>(allProducts);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -216,19 +214,19 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const getProductById = (id: string) => {
-    return products.find(product => product.id === id);
+    return getProductById(id);
   };
 
   const getProductsByCategory = (category: string) => {
-    return products.filter(product => product.category === category);
+    return getProductsByCategory(category);
   };
 
   const getFeaturedProducts = () => {
-    return products.filter(product => product.featured);
+    return getFeaturedProducts();
   };
 
   const getBestSellingProducts = () => {
-    return products.filter(product => product.bestSeller);
+    return getBestSellingProducts();
   };
 
   // Place an order
@@ -253,7 +251,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
 
   // Get an order by ID
   const getOrderById = (id: string) => {
-    return orders.find(order => order.id === id);
+    return getOrderById(id);
   };
 
   return (
