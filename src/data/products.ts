@@ -299,5 +299,4 @@ export const expandedProducts: Product[] = [
     image: "https://images.unsplash.com/photo-1627126322606-e0271102d33e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXN1cyUyMGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D",
     images: [
       "https://images.unsplash.com/photo-1627126322606-e0271102d33e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXN1cyUyMGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D",
-      "https://images.unsplash.com/photo-1614030424754-24d0eebd46b2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGFzdXMlMjBsYXB0b3B8ZW58MHx8MHx8fDA%3D",
-      "https://images.unsplash.com/photo-1621570074947-3d93dca15b26?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB
+      "https://images.unsplash.com/photo-1614030424754-24d0eebd46b2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h
