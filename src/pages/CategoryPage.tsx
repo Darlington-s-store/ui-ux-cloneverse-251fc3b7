@@ -44,7 +44,7 @@ const CategoryPage = () => {
         ]} 
       />
       
-      <div className="container-custom py-8 md:py-12 min-h-screen">
+      <div className="container-custom py-8 md:py-12 min-h-screen w-full">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8">
           <h1 className="text-3xl font-bold">{categoryName}</h1>
           

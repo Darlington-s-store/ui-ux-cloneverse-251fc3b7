@@ -299,4 +299,21 @@ export const expandedProducts: Product[] = [
     image: "https://images.unsplash.com/photo-1627126322606-e0271102d33e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXN1cyUyMGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D",
     images: [
       "https://images.unsplash.com/photo-1627126322606-e0271102d33e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8YXN1cyUyMGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D",
-      "https://images.unsplash.com/photo-1614030424754-24d0eebd46b2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h
+      "https://images.unsplash.com/photo-1614030424754-24d0eebd46b2?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8YXN1cyUyMGxhcHRvcHxlbnwwfHwwfHx8MA%3D%3D",
+      "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8eGlhb21pfGVufDB8fDB8fHww"
+    ],
+    rating: 4.5,
+    reviewCount: 98,
+    discountPercentage: 12,
+    category: "computers",
+    description: "The ASUS ROG Zephyrus G14 combines powerful AMD Ryzen processors with NVIDIA RTX graphics in a compact, portable design for gamers on the go.",
+    inStock: true,
+    colors: ["#000000", "#FFFFFF", "#808080"],
+    sizes: [
+      { name: "Ryzen 7 512GB", price: 1499 },
+      { name: "Ryzen 9 1TB", price: 1799 }
+    ],
+    featured: true,
+    bestSeller: false
+  }
+];
