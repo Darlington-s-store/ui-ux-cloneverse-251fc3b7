@@ -41,11 +41,11 @@ const Footer = () => {
           <div className="col-span-1">
             <h4 className="footer-heading">Support</h4>
             <address className="not-italic mb-4 text-gray-400">
-              111 Bijoy sarani, Dhaka,<br />
-              DH 1515, Bangladesh.
+              IPT - Kumasi,<br />
+             Ashanti, Gahana.
             </address>
-            <p className="mb-2 text-gray-400">exclusive@gmail.com</p>
-            <p className="text-gray-400">+88015-88888-9999</p>
+            <p className="mb-2 text-gray-400">exclusivemall@gmail.com</p>
+            <p className="text-gray-400">+233 552945333</p>
           </div>
           
           {/* Column 3 */}
@@ -102,7 +102,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-16 text-center text-gray-400 text-sm">
-          <p>&copy; Copyright Rimel 2022. All right reserved</p>
+          <p>&copy; Copyright Exclusive Mall 2025. All right reserved <br/> Designed by Kwame Darlington Junior  </p>
         </div>
       </div>
     </footer>
