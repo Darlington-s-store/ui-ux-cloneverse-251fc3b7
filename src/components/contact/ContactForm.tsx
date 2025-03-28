@@ -55,7 +55,7 @@ const ContactForm = () => {
                   </div>
                 </div>
                 <p className="text-gray-600">We are available 24/7, 7 days a week.</p>
-                <p className="text-gray-600">Phone: +8801611112222</p>
+                <p className="text-gray-600">Phone: +233 552945333</p>
               </div>
               
               <div className="border-t border-gray-200 pt-8">
@@ -68,8 +68,8 @@ const ContactForm = () => {
                   </div>
                 </div>
                 <p className="text-gray-600">Fill out our form and we will contact you within 24 hours.</p>
-                <p className="text-gray-600">Emails: customer@exclusive.com</p>
-                <p className="text-gray-600">Emails: support@exclusive.com</p>
+                <p className="text-gray-600">Emails: customer@exclusivemall.com</p>
+                <p className="text-gray-600">Emails: support@asomanirawlingsjunior71@gmail.com</p>
               </div>
             </div>
           </div>
