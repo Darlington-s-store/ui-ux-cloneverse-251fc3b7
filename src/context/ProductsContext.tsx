@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { allProducts, getProductById, getProductsByCategory, getFeaturedProducts, getBestSellingProducts } from '../data';
+import { allProducts, getProductsByCategoryFromData, getFeaturedProductsFromData, getBestSellingProductsFromData } from '../data';
 
 // Product Types
 export interface ProductSize {
@@ -54,7 +54,7 @@ export interface Order {
   date: string;
   items: CartItem[];
   total: number;
-  status: 'processing' | 'shipped' | 'delivered';
+  status: 'processing' | 'shipped' | 'delivered' | 'pending';
   shippingAddress: {
     name: string;
     address: string;
@@ -64,6 +64,7 @@ export interface Order {
     country: string;
   };
   paymentMethod: string;
+  paymentStatus?: 'pending' | 'paid';
 }
 
 interface ProductsContextType {
@@ -84,7 +85,7 @@ interface ProductsContextType {
   getProductsByCategory: (category: string) => Product[];
   getFeaturedProducts: () => Product[];
   getBestSellingProducts: () => Product[];
-  placeOrder: (shippingInfo: Order['shippingAddress'], paymentMethod: string) => string;
+  placeOrder: (shippingInfo: Order['shippingAddress'], paymentMethod: string, paymentStatus?: 'pending' | 'paid') => string;
   getOrderById: (id: string) => Order | undefined;
 }
 
@@ -213,24 +214,25 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return wishlistItems.length;
   };
 
-  const getProductById = (id: string) => {
-    return getProductById(id);
+  // Fix the functions to avoid infinite recursion
+  const getProductById = (id: string): Product | undefined => {
+    return products.find(product => product.id === id);
   };
 
-  const getProductsByCategory = (category: string) => {
-    return getProductsByCategory(category);
+  const getProductsByCategory = (category: string): Product[] => {
+    return getProductsByCategoryFromData(category);
   };
 
-  const getFeaturedProducts = () => {
-    return getFeaturedProducts();
+  const getFeaturedProducts = (): Product[] => {
+    return getFeaturedProductsFromData();
   };
 
-  const getBestSellingProducts = () => {
-    return getBestSellingProducts();
+  const getBestSellingProducts = (): Product[] => {
+    return getBestSellingProductsFromData();
   };
 
-  // Place an order
-  const placeOrder = (shippingInfo: Order['shippingAddress'], paymentMethod: string) => {
+  // Place an order with payment status
+  const placeOrder = (shippingInfo: Order['shippingAddress'], paymentMethod: string, paymentStatus: 'pending' | 'paid' = 'pending') => {
     const orderId = `ORD-${Date.now().toString().slice(-6)}`;
     
     const newOrder: Order = {
@@ -238,9 +240,10 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       date: new Date().toISOString(),
       items: [...cartItems],
       total: getCartTotal(),
-      status: 'processing',
+      status: paymentStatus === 'paid' ? 'processing' : 'pending',
       shippingAddress: shippingInfo,
-      paymentMethod
+      paymentMethod,
+      paymentStatus
     };
     
     setOrders(prev => [newOrder, ...prev]);
@@ -250,8 +253,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Get an order by ID
-  const getOrderById = (id: string) => {
-    return getOrderById(id);
+  const getOrderById = (id: string): Order | undefined => {
+    return orders.find(order => order.id === id);
   };
 
   return (

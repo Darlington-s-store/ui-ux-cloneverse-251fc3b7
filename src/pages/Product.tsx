@@ -17,6 +17,7 @@ const Product = () => {
   
   useEffect(() => {
     if (id) {
+      // This is causing the issue - we need to call the function directly
       const foundProduct = getProductById(id);
       
       if (foundProduct) {
