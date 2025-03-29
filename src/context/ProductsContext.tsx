@@ -1,5 +1,5 @@
 import { createContext, useState, useContext, ReactNode, useEffect } from 'react';
-import { allProducts, getProductsByCategoryFromData, getFeaturedProductsFromData, getBestSellingProductsFromData } from '../data';
+import { allProducts, getProductsByCategory, getFeaturedProducts, getBestSellingProducts } from '../data';
 
 // Product Types
 export interface ProductSize {
