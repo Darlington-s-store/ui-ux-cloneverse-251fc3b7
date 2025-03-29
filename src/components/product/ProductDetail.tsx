@@ -4,6 +4,7 @@ import { Heart, Minus, Plus, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProducts, Product } from '../../context/ProductsContext';
 import ProductImages from './ProductImages';
+import { Button } from '@/components/ui/button';
 
 interface ProductDetailProps {
   product: Product;
@@ -27,10 +28,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   };
   
   const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addToCart(product);
-    }
+    addToCart(product, selectedColor, selectedSize);
     toast.success(`${product.name} added to cart`);
+  };
+  
+  const handleBuyNow = () => {
+    addToCart(product, selectedColor, selectedSize);
+    toast.success(`${product.name} added to cart`);
+    // Navigate to checkout directly
+    window.location.href = '/checkout';
   };
   
   const handleAddToWishlist = () => {
@@ -148,13 +154,25 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
               disabled={!product.inStock}
               className={`flex items-center justify-center gap-2 py-2 px-6 rounded-md ${
                 product.inStock
-                  ? 'bg-exclusive text-white hover:bg-exclusive-dark'
+                  ? 'bg-gray-800 text-white hover:bg-gray-700'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               } transition-colors`}
             >
               <ShoppingCart size={18} />
-              <span>Buy Now</span>
+              <span>Add to Cart</span>
             </button>
+            
+            <Button
+              onClick={handleBuyNow}
+              disabled={!product.inStock}
+              className={`flex items-center justify-center gap-2 py-2 px-6 ${
+                product.inStock
+                  ? 'bg-exclusive text-white hover:bg-exclusive-dark'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              <span>Buy Now</span>
+            </Button>
             
             <button
               onClick={handleAddToWishlist}

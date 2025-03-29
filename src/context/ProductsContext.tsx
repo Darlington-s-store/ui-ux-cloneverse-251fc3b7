@@ -214,21 +214,21 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return wishlistItems.length;
   };
 
-  // Fix the functions to avoid infinite recursion
+  // Fix the functions to use the correct imported functions
   const getProductById = (id: string): Product | undefined => {
     return products.find(product => product.id === id);
   };
 
   const getProductsByCategory = (category: string): Product[] => {
-    return getProductsByCategoryFromData(category);
+    return products.filter(product => product.category.toLowerCase() === category.toLowerCase());
   };
 
   const getFeaturedProducts = (): Product[] => {
-    return getFeaturedProductsFromData();
+    return products.filter(product => product.featured);
   };
 
   const getBestSellingProducts = (): Product[] => {
-    return getBestSellingProductsFromData();
+    return products.filter(product => product.bestSeller);
   };
 
   // Place an order with payment status

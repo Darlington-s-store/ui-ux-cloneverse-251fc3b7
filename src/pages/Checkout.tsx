@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
@@ -9,22 +9,30 @@ import { toast } from 'sonner';
 
 const Checkout = () => {
   const { cartItems, getCartTotal } = useProducts();
-  const [shippingCost] = useState<number | 'Free'>(0); // Can be updated based on shipping method selection
+  const [shippingCost] = useState<number | 'Free'>('Free'); // Can be updated based on shipping method selection
   const navigate = useNavigate();
   const subtotal = getCartTotal();
   
-  // Redirect to cart if cart is empty
-  if (cartItems.length === 0) {
-    navigate('/cart');
-    toast.error('Your cart is empty!');
-  }
+  useEffect(() => {
+    // Redirect to cart if cart is empty
+    if (cartItems.length === 0) {
+      navigate('/cart');
+      toast.error('Your cart is empty!');
+    }
+  }, [cartItems, navigate]);
   
   const handlePlaceOrder = (shippingInfo: any, paymentMethod: string, paymentStatus: 'pending' | 'paid') => {
-    const { placeOrder } = useProducts();
-    const orderId = placeOrder(shippingInfo, paymentMethod, paymentStatus);
-    
-    // Redirect to success page with the order ID
-    navigate(`/order-success?orderId=${orderId}`);
+    try {
+      const { placeOrder } = useProducts();
+      const orderId = placeOrder(shippingInfo, paymentMethod, paymentStatus);
+      
+      // Redirect to success page with the order ID
+      navigate(`/order-success?orderId=${orderId}`);
+      toast.success('Order placed successfully!');
+    } catch (error) {
+      toast.error('Failed to place order. Please try again.');
+      console.error('Order placement error:', error);
+    }
   };
   
   return (

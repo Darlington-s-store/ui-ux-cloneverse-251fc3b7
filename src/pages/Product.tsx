@@ -17,8 +17,7 @@ const Product = () => {
   
   useEffect(() => {
     if (id) {
-      // This is causing the issue - we need to call the function directly
-      const foundProduct = getProductById(id);
+      const foundProduct = products.find(p => p.id === id);
       
       if (foundProduct) {
         setProduct(foundProduct);
@@ -34,7 +33,7 @@ const Product = () => {
         navigate('/not-found');
       }
     }
-  }, [id, getProductById, products, navigate]);
+  }, [id, products, navigate]);
   
   if (!product) {
     return (
@@ -58,7 +57,7 @@ const Product = () => {
       
       <div className="container-custom py-12">
         <ProductDetail product={product} />
-        <RelatedProducts products={relatedProducts} />
+        {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}
       </div>
     </Layout>
   );
