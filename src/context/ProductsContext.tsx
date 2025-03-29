@@ -93,8 +93,47 @@ interface ProductsContextType {
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
 
-// Array of placeholder image URLs
-const placeholderImages = [
+// Array of placeholder image URLs based on categories
+const placeholderImagesByCategory: Record<string, string[]> = {
+  phones: [
+    "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
+    "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500",
+    "https://images.unsplash.com/photo-1604671371836-9e8ca46a12b0?w=500"
+  ],
+  computers: [
+    "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500",
+    "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500",
+    "https://images.unsplash.com/photo-1587614382346-4ec70e388b28?w=500"
+  ],
+  headphones: [
+    "https://images.unsplash.com/photo-1599669454699-248893623440?w=500",
+    "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500",
+    "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500"
+  ],
+  gaming: [
+    "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500",
+    "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=500",
+    "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=500"
+  ],
+  tablets: [
+    "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500",
+    "https://images.unsplash.com/photo-1623126908029-58cb08a2b272?w=500",
+    "https://images.unsplash.com/photo-1585790050230-5dd28404cbd9?w=500"
+  ],
+  cameras: [
+    "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500",
+    "https://images.unsplash.com/photo-1581591524425-c7e0978865fc?w=500",
+    "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=500"
+  ],
+  monitors: [
+    "https://images.unsplash.com/photo-1527219525722-f9767a7f2884?w=500",
+    "https://images.unsplash.com/photo-1588200908342-23b585c03e26?w=500",
+    "https://images.unsplash.com/photo-1524055988636-436cfa46e59e?w=500"
+  ]
+};
+
+// General fallback images for any category
+const genericPlaceholders = [
   "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
   "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
   "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
@@ -270,9 +309,18 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       return product.image;
     }
     
-    // Use product ID to consistently assign the same placeholder to a product
-    const placeholderIndex = parseInt(product.id.replace(/\D/g, '0')) % placeholderImages.length;
-    return placeholderImages[placeholderIndex];
+    const nameHash = product.name
+      .split('')
+      .reduce((hash, char) => char.charCodeAt(0) + hash, 0);
+    
+    const categoryImages = placeholderImagesByCategory[product.category];
+    if (categoryImages && categoryImages.length > 0) {
+      const index = nameHash % categoryImages.length;
+      return categoryImages[index];
+    }
+    
+    const fallbackIndex = nameHash % genericPlaceholders.length;
+    return genericPlaceholders[fallbackIndex];
   };
 
   return (
