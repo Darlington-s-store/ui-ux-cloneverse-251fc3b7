@@ -2,6 +2,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import { Link } from 'react-router-dom';
+import { useProducts } from '../../context/ProductsContext';
 
 interface ProductGridProps {
   title: string;
@@ -19,6 +20,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
   maxDisplay = 6
 }) => {
   const displayProducts = products.slice(0, maxDisplay);
+  const { getProductImage } = useProducts();
   
   return (
     <div className="my-12">
@@ -51,7 +53,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({
             name={product.name}
             price={product.price}
             oldPrice={product.oldPrice}
-            image={product.image}
+            image={getProductImage(product)}
             rating={product.rating}
             reviewCount={product.reviewCount}
             discountPercentage={product.discountPercentage}

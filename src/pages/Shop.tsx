@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
@@ -8,14 +7,13 @@ import { getCategories } from '../utils/categories';
 import { Filter, ChevronDown, Grid, List } from 'lucide-react';
 
 const Shop = () => {
-  const { products } = useProducts();
+  const { products, getProductImage } = useProducts();
   const categories = getCategories();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 2000]);
   const [sortBy, setSortBy] = useState<string>('default');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
-  // Filter products by category and price
   const filteredProducts = products.filter(product => {
     const matchesCategory = selectedCategory 
       ? product.category === selectedCategory 
@@ -26,7 +24,6 @@ const Shop = () => {
     return matchesCategory && matchesPrice;
   });
   
-  // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
@@ -70,7 +67,6 @@ const Shop = () => {
         <h1 className="text-3xl font-bold mb-8">Shop</h1>
         
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar */}
           <div className="lg:w-1/4">
             <div className="border border-gray-200 rounded-lg p-6 mb-6">
               <h3 className="font-semibold mb-4 flex items-center">
@@ -150,7 +146,6 @@ const Shop = () => {
             </div>
           </div>
           
-          {/* Products Grid */}
           <div className="lg:w-3/4">
             <div className="flex items-center justify-between mb-6 bg-gray-50 p-4 rounded-lg">
               <div className="flex items-center">
@@ -198,7 +193,7 @@ const Shop = () => {
                         name={product.name}
                         price={product.price}
                         oldPrice={product.oldPrice}
-                        image={product.image}
+                        image={getProductImage(product)}
                         rating={product.rating}
                         reviewCount={product.reviewCount}
                         discountPercentage={product.discountPercentage}
@@ -207,7 +202,7 @@ const Shop = () => {
                     ) : (
                       <div className="flex">
                         <div className="w-1/4">
-                          <img src={product.image} alt={product.name} className="w-full h-auto object-contain" />
+                          <img src={getProductImage(product)} alt={product.name} className="w-full h-auto object-contain" />
                         </div>
                         <div className="w-3/4 pl-6">
                           <h3 className="text-lg font-medium">{product.name}</h3>

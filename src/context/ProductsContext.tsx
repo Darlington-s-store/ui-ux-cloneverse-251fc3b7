@@ -88,9 +88,19 @@ interface ProductsContextType {
   getDiscountedProducts: (limit?: number) => Product[];
   placeOrder: (shippingInfo: Order['shippingAddress'], paymentMethod: string, paymentStatus?: 'pending' | 'paid') => string;
   getOrderById: (id: string) => Order | undefined;
+  getProductImage: (product: Product) => string;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
+
+// Array of placeholder image URLs
+const placeholderImages = [
+  "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5",
+  "https://images.unsplash.com/photo-1531297484001-80022131f5a1",
+  "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+  "https://images.unsplash.com/photo-1518770660439-4636190af475",
+  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6"
+];
 
 export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const [products] = useState<Product[]>(allProducts);
@@ -255,6 +265,16 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return orders.find(order => order.id === id);
   };
 
+  const getProductImage = (product: Product): string => {
+    if (product.image && product.image !== '') {
+      return product.image;
+    }
+    
+    // Use product ID to consistently assign the same placeholder to a product
+    const placeholderIndex = parseInt(product.id.replace(/\D/g, '0')) % placeholderImages.length;
+    return placeholderImages[placeholderIndex];
+  };
+
   return (
     <ProductsContext.Provider value={{
       products,
@@ -276,7 +296,8 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       getBestSellingProducts,
       getDiscountedProducts,
       placeOrder,
-      getOrderById
+      getOrderById,
+      getProductImage
     }}>
       {children}
     </ProductsContext.Provider>

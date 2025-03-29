@@ -11,7 +11,7 @@ import { Product as ProductType } from '../context/ProductsContext';
 const Product = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getProductById, getProductsByCategory } = useProducts();
+  const { getProductById, getProductsByCategory, getProductImage } = useProducts();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductType[]>([]);
   
@@ -20,6 +20,16 @@ const Product = () => {
       const foundProduct = getProductById(id);
       
       if (foundProduct) {
+        // Add proper image to the product if it doesn't have one
+        if (!foundProduct.image || foundProduct.image === '') {
+          foundProduct.image = getProductImage(foundProduct);
+        }
+        
+        // Make sure the product has an images array for the gallery
+        if (!foundProduct.images || foundProduct.images.length === 0) {
+          foundProduct.images = [foundProduct.image];
+        }
+        
         setProduct(foundProduct);
         
         // Find related products (same category)
@@ -33,7 +43,7 @@ const Product = () => {
         navigate('/not-found');
       }
     }
-  }, [id, getProductById, getProductsByCategory, navigate]);
+  }, [id, getProductById, getProductsByCategory, navigate, getProductImage]);
   
   if (!product) {
     return (

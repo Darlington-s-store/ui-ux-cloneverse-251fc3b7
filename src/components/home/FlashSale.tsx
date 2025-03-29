@@ -4,7 +4,7 @@ import ProductCard from '../products/ProductCard';
 import { useProducts } from '../../context/ProductsContext';
 
 const FlashSale = () => {
-  const { getDiscountedProducts } = useProducts();
+  const { getDiscountedProducts, getProductImage } = useProducts();
   const flashSaleProducts = getDiscountedProducts(4);
   
   const [timeRemaining, setTimeRemaining] = useState({
@@ -82,7 +82,7 @@ const FlashSale = () => {
             name={product.name}
             price={product.price}
             oldPrice={product.oldPrice}
-            image={product.image}
+            image={getProductImage(product)}
             rating={product.rating}
             reviewCount={product.reviewCount}
             discountPercentage={product.discountPercentage}
