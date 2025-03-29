@@ -1,54 +1,12 @@
 
 import { useEffect, useState } from 'react';
 import ProductCard from '../products/ProductCard';
-
-const flashSaleProducts = [
-  {
-    id: '1',
-    name: 'HAVIT HV-G92 Gamepad',
-    price: 120,
-    oldPrice: 160,
-    image: 'https://images.unsplash.com/photo-1605773527852-c546a8584ea3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1074&q=80',
-    rating: 4.7,
-    reviewCount: 88,
-    discountPercentage: 40,
-    category: 'gaming'
-  },
-  {
-    id: '2',
-    name: 'AK-900 Wired Keyboard',
-    price: 900,
-    oldPrice: 1160,
-    image: 'https://images.unsplash.com/photo-1595044426077-d36d9236d72a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-    rating: 4.5,
-    reviewCount: 75,
-    discountPercentage: 35,
-    category: 'accessories'
-  },
-  {
-    id: '3',
-    name: 'IPS LCD Gaming Monitor',
-    price: 370, 
-    oldPrice: 400,
-    image: 'https://images.unsplash.com/photo-1616763355548-1b606f439f86?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-    rating: 4.8,
-    reviewCount: 99,
-    discountPercentage: 30,
-    category: 'monitors'
-  },
-  {
-    id: '4',
-    name: 'RGB liquid CPU Cooler',
-    price: 160,
-    oldPrice: 170,
-    image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80',
-    rating: 4.6,
-    reviewCount: 65,
-    category: 'accessories'
-  }
-];
+import { useProducts } from '../../context/ProductsContext';
 
 const FlashSale = () => {
+  const { getDiscountedProducts } = useProducts();
+  const flashSaleProducts = getDiscountedProducts(4);
+  
   const [timeRemaining, setTimeRemaining] = useState({
     days: 3,
     hours: 23,
@@ -128,6 +86,7 @@ const FlashSale = () => {
             rating={product.rating}
             reviewCount={product.reviewCount}
             discountPercentage={product.discountPercentage}
+            isNew={product.isNew}
           />
         ))}
       </div>

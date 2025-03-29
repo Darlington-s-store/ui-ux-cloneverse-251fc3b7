@@ -11,20 +11,20 @@ import { Product as ProductType } from '../context/ProductsContext';
 const Product = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getProductById, products } = useProducts();
+  const { getProductById, getProductsByCategory } = useProducts();
   const [product, setProduct] = useState<ProductType | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<ProductType[]>([]);
   
   useEffect(() => {
     if (id) {
-      const foundProduct = products.find(p => p.id === id);
+      const foundProduct = getProductById(id);
       
       if (foundProduct) {
         setProduct(foundProduct);
         
         // Find related products (same category)
-        const related = products
-          .filter(p => p.category === foundProduct.category && p.id !== foundProduct.id)
+        const related = getProductsByCategory(foundProduct.category)
+          .filter(p => p.id !== foundProduct.id)
           .slice(0, 4);
         
         setRelatedProducts(related);
@@ -33,7 +33,7 @@ const Product = () => {
         navigate('/not-found');
       }
     }
-  }, [id, products, navigate]);
+  }, [id, getProductById, getProductsByCategory, navigate]);
   
   if (!product) {
     return (

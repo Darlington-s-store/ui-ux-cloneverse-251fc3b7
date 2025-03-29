@@ -85,6 +85,7 @@ interface ProductsContextType {
   getProductsByCategory: (category: string) => Product[];
   getFeaturedProducts: () => Product[];
   getBestSellingProducts: () => Product[];
+  getDiscountedProducts: (limit?: number) => Product[];
   placeOrder: (shippingInfo: Order['shippingAddress'], paymentMethod: string, paymentStatus?: 'pending' | 'paid') => string;
   getOrderById: (id: string) => Order | undefined;
 }
@@ -97,7 +98,6 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
 
-  // Load cart, wishlist, and orders from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
     const savedWishlist = localStorage.getItem('wishlist');
@@ -108,24 +108,20 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     if (savedOrders) setOrders(JSON.parse(savedOrders));
   }, []);
 
-  // Save cart to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
-  // Save wishlist to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
   }, [wishlistItems]);
 
-  // Save orders to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem('orders', JSON.stringify(orders));
   }, [orders]);
 
   const addToCart = (product: Product, color?: string, size?: string) => {
     setCartItems(prev => {
-      // Get the selected size price or default to product price
       let itemPrice = product.price;
       if (size) {
         const sizeObj = product.sizes.find(s => s.name === size);
@@ -134,7 +130,6 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
         }
       }
       
-      // Create a unique identifier for the combination of product, color, and size
       const itemId = `${product.id}${color ? `-${color}` : ''}${size ? `-${size}` : ''}`;
       
       const existingItem = prev.find(item => 
@@ -181,7 +176,6 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addToWishlist = (product: Product) => {
-    // Check if product is already in wishlist
     if (!wishlistItems.some(item => item.id === product.id)) {
       setWishlistItems(prev => [...prev, { 
         id: product.id, 
@@ -214,7 +208,6 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return wishlistItems.length;
   };
 
-  // Fix the functions to use the correct imported functions
   const getProductById = (id: string): Product | undefined => {
     return products.find(product => product.id === id);
   };
@@ -231,7 +224,13 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return products.filter(product => product.bestSeller);
   };
 
-  // Place an order with payment status
+  const getDiscountedProducts = (limit: number = 8): Product[] => {
+    return products
+      .filter(product => product.discountPercentage && product.discountPercentage > 0)
+      .sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0))
+      .slice(0, limit);
+  };
+
   const placeOrder = (shippingInfo: Order['shippingAddress'], paymentMethod: string, paymentStatus: 'pending' | 'paid' = 'pending') => {
     const orderId = `ORD-${Date.now().toString().slice(-6)}`;
     
@@ -252,7 +251,6 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
     return orderId;
   };
 
-  // Get an order by ID
   const getOrderById = (id: string): Order | undefined => {
     return orders.find(order => order.id === id);
   };
@@ -276,6 +274,7 @@ export const ProductsProvider = ({ children }: { children: ReactNode }) => {
       getProductsByCategory,
       getFeaturedProducts,
       getBestSellingProducts,
+      getDiscountedProducts,
       placeOrder,
       getOrderById
     }}>
