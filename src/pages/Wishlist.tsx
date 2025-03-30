@@ -6,21 +6,21 @@ import { useProducts } from '../context/ProductsContext';
 import { toast } from 'sonner';
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist, addToCart, getProductById } = useProducts();
+  const { wishlistItems, removeFromWishlist, addToCart } = useProducts();
   
   const handleAddToCart = (id: string) => {
-    const product = getProductById(id);
-    if (product) {
-      addToCart(product);
-      toast.success(`${product.name} added to cart`);
+    const item = wishlistItems.find(item => item.product.id === id);
+    if (item) {
+      addToCart(item.product);
+      toast.success(`${item.product.name} added to cart`);
     }
   };
   
   const handleRemoveItem = (id: string) => {
-    const item = wishlistItems.find(item => item.id === id);
+    const item = wishlistItems.find(item => item.product.id === id);
     if (item) {
       removeFromWishlist(id);
-      toast.success(`${item.name} removed from wishlist`);
+      toast.success(`${item.product.name} removed from wishlist`);
     }
   };
   
@@ -50,13 +50,13 @@ const Wishlist = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {wishlistItems.map((item) => (
               <WishlistItem
-                key={item.id}
-                id={item.id}
-                name={item.name}
-                price={item.price}
-                oldPrice={item.oldPrice}
-                image={item.image}
-                discountPercentage={item.discountPercentage}
+                key={item.product.id}
+                id={item.product.id}
+                name={item.product.name}
+                price={item.product.price}
+                oldPrice={item.product.oldPrice}
+                image={item.product.image}
+                discountPercentage={item.product.discountPercentage}
                 onRemove={handleRemoveItem}
                 onAddToCart={handleAddToCart}
               />

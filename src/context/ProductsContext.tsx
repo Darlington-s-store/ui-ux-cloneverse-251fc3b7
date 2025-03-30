@@ -159,6 +159,8 @@ interface ProductsContextProps {
   addToWishlist: (product: Product) => void;
   removeFromWishlist: (productId: string) => void;
   getCartTotal: () => number;
+  getCartCount: () => number;
+  getWishlistCount: () => number;
   placeOrder: (shippingInfo: any, paymentMethod: string, paymentStatus: 'pending' | 'paid') => string;
   getFeaturedProducts: () => Product[];
   getBestSellingProducts: () => Product[];
@@ -256,6 +258,14 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const itemPrice = item.selectedSize?.price || item.product.price;
       return total + (itemPrice * item.quantity);
     }, 0);
+  };
+  
+  const getCartCount = (): number => {
+    return state.cartItems.reduce((count, item) => count + item.quantity, 0);
+  };
+  
+  const getWishlistCount = (): number => {
+    return state.wishlistItems.length;
   };
   
   const placeOrder = (shippingInfo: any, paymentMethod: string, paymentStatus: 'pending' | 'paid'): string => {
@@ -392,6 +402,8 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       addToWishlist,
       removeFromWishlist,
       getCartTotal,
+      getCartCount,
+      getWishlistCount,
       placeOrder,
       getFeaturedProducts,
       getBestSellingProducts,
