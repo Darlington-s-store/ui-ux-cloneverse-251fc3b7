@@ -77,10 +77,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
             src={image} 
             alt={name} 
             className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
-            onError={(e) => {
-              // Fallback image if the provided one fails to load
-              (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7";
-            }}
           />
           
           <div className={`absolute top-2 right-2 flex flex-col gap-2 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
