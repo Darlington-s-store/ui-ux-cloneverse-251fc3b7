@@ -68,7 +68,7 @@ const ContactForm = () => {
                   </div>
                 </div>
                 <p className="text-gray-600">Fill out our form and we will contact you within 24 hours.</p>
-                <p className="text-gray-600">Emails: customer@exclusivemall.com</p>
+                <p className="text-gray-600">Emails: customer@eliteemall.com</p>
                 <p className="text-gray-600">Emails: support@asomanirawlingsjunior71@gmail.com</p>
               </div>
             </div>
