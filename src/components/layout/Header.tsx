@@ -54,7 +54,7 @@ const Header = () => {
           </button>
           
           <Link to="/" className="flex items-center">
-            <h1 className="text-xl font-bold text-exclusive">Exclusive Mall</h1>
+            <h1 className="text-xl font-bold text-elite">Elite Mall</h1>
           </Link>
           
           <nav className="hidden md:flex items-center space-x-6">
