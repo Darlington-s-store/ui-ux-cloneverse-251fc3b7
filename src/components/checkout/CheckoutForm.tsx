@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,10 +17,19 @@ interface CheckoutFormProps {
   }[];
   subtotal: number;
   shipping: number | 'Free';
-  onPlaceOrder: (shippingInfo: any, paymentMethod: string, paymentStatus: 'pending' | 'paid') => void;
+  total: number;
+  isProcessing: boolean;
+  onPlaceOrder: (shippingInfo: any, paymentMethod: string) => void;
 }
 
-const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shipping, onPlaceOrder }) => {
+const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
+  cartItems, 
+  subtotal, 
+  shipping, 
+  total, 
+  isProcessing,
+  onPlaceOrder 
+}) => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -112,11 +120,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
       
       // Process order
       const paymentStatus = formData.paymentMethod === 'cash' ? 'pending' : 'paid';
-      onPlaceOrder(shippingInfo, formData.paymentMethod, paymentStatus);
+      onPlaceOrder(shippingInfo, formData.paymentMethod);
     }, 2000);
   };
-  
-  const total = typeof shipping === 'number' ? subtotal + shipping : subtotal;
   
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -333,7 +339,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({ cartItems, subtotal, shippi
                   </div>
                   <div className="flex space-x-1">
                     <img src="https://images.unsplash.com/photo-1542309170-05c06d1703f5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y3JlZGl0JTIwY2FyZHxlbnwwfHwwfHx8MA%3D%3D" alt="Visa" className="h-6 w-auto" />
-                    <img src="https://images.unsplash.com/photo-1588250894213-88a5c6ffd615?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNyZWRpdCUyMGNhcmR8ZW58MHx8MHx8fDA%3D" alt="Mastercard" className="h-6 w-auto" />
+                    <img src="https://images.unsplash.com/photo-1588250894213-88a5c6ffd615?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNyZWRpdCUyMGNhcmR8ZW58MHx8MHx8MA%3D%3D" alt="Mastercard" className="h-6 w-auto" />
                   </div>
                 </div>
                 

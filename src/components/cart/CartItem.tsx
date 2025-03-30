@@ -11,6 +11,8 @@ interface CartItemProps {
   quantity: number;
   onUpdateQuantity: (id: string, quantity: number) => void;
   onRemove: (id: string) => void;
+  color?: string;
+  size?: string;
 }
 
 const CartItem: React.FC<CartItemProps> = ({
@@ -20,7 +22,9 @@ const CartItem: React.FC<CartItemProps> = ({
   image,
   quantity,
   onUpdateQuantity,
-  onRemove
+  onRemove,
+  color,
+  size
 }) => {
   const handleIncrease = () => {
     onUpdateQuantity(id, quantity + 1);
@@ -58,6 +62,20 @@ const CartItem: React.FC<CartItemProps> = ({
       
       <div className="flex-grow">
         <h3 className="font-medium">{name}</h3>
+        {(color || size) && (
+          <div className="text-sm text-gray-500 mt-1">
+            {color && (
+              <div className="flex items-center">
+                <span className="mr-1">Color:</span>
+                <span 
+                  className="inline-block w-3 h-3 rounded-full" 
+                  style={{ backgroundColor: color }}
+                />
+              </div>
+            )}
+            {size && <div>Size: {size}</div>}
+          </div>
+        )}
       </div>
       
       <div className="flex-shrink-0 w-32 mx-6">

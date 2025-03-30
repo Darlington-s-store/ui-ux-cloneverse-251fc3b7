@@ -7,10 +7,11 @@ import { toast } from 'sonner';
 interface CartSummaryProps {
   subtotal: number;
   shipping: number | 'Free';
-  onCheckout?: () => void; // Added onCheckout as optional prop
+  total: number;
+  onCheckout?: () => void; 
 }
 
-const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, onCheckout }) => {
+const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, onCheckout }) => {
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [appliedCoupon, setAppliedCoupon] = useState('');
@@ -18,7 +19,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, onCheckou
   
   // Calculate total with discount
   const discountedSubtotal = subtotal - discount;
-  const total = typeof shipping === 'number' 
+  const calculatedTotal = typeof shipping === 'number' 
     ? discountedSubtotal + shipping 
     : discountedSubtotal;
   
