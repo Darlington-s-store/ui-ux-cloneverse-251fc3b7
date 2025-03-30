@@ -18,7 +18,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
           {/* Column 1 */}
           <div className="col-span-1">
-            <h3 className="text-2xl font-bold mb-6">Exclusive</h3>
+            <h3 className="text-2xl font-bold mb-6">Elite</h3>
             <p className="mb-6">Subscribe</p>
             <p className="mb-4">Get 10% off your first order</p>
             
@@ -44,7 +44,7 @@ const Footer = () => {
               IPT - Kumasi,<br />
              Ashanti, Gahana.
             </address>
-            <p className="mb-2 text-gray-400">exclusivemall@gmail.com</p>
+            <p className="mb-2 text-gray-400">elitemall@gmail.com</p>
             <p className="text-gray-400">+233 552945333</p>
           </div>
           
@@ -102,7 +102,7 @@ const Footer = () => {
         </div>
         
         <div className="mt-16 text-center text-gray-400 text-sm">
-          <p>&copy; Copyright Exclusive Mall 2025. All right reserved <br/> Designed by Kwame Darlington Junior  </p>
+          <p>&copy; Copyright Elite Mall 2025. All right reserved <br/> Designed by Kwame Darlington Junior  </p>
         </div>
       </div>
     </footer>
