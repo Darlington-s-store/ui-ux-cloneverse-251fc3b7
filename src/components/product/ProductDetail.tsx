@@ -12,7 +12,9 @@ interface ProductDetailProps {
 
 const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   const [selectedColor, setSelectedColor] = useState(product.colors?.[0] || '');
-  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]?.name || '');
+  const [selectedSize, setSelectedSize] = useState<{ name: string; price: number } | undefined>(
+    product.sizes?.[0] || undefined
+  );
   const [quantity, setQuantity] = useState(1);
   
   const { addToCart, addToWishlist } = useProducts();
@@ -28,12 +30,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
   };
   
   const handleAddToCart = () => {
-    addToCart(product, selectedColor, selectedSize);
+    addToCart(product, quantity, selectedSize, selectedColor);
     toast.success(`${product.name} added to cart`);
   };
   
   const handleBuyNow = () => {
-    addToCart(product, selectedColor, selectedSize);
+    addToCart(product, quantity, selectedSize, selectedColor);
     toast.success(`${product.name} added to cart`);
     // Navigate to checkout directly
     window.location.href = '/checkout';
@@ -116,11 +118,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product }) => {
                     <button
                       key={sizeObj.name}
                       className={`min-w-[40px] h-10 flex items-center justify-center px-3 text-sm ${
-                        selectedSize === sizeObj.name
+                        selectedSize?.name === sizeObj.name
                           ? 'bg-exclusive text-white'
                           : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                       } rounded-md transition-colors`}
-                      onClick={() => setSelectedSize(sizeObj.name)}
+                      onClick={() => setSelectedSize(sizeObj)}
                     >
                       {sizeObj.name}
                     </button>

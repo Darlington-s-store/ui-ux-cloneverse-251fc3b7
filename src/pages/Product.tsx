@@ -1,73 +1,49 @@
 
-import { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import ProductDetail from '../components/product/ProductDetail';
 import RelatedProducts from '../components/product/RelatedProducts';
 import { useProducts } from '../context/ProductsContext';
-import { Product as ProductType } from '../context/ProductsContext';
 
 const Product = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { getProductById, getProductsByCategory, getProductImage } = useProducts();
-  const [product, setProduct] = useState<ProductType | null>(null);
-  const [relatedProducts, setRelatedProducts] = useState<ProductType[]>([]);
+  const { getProductById, getRelatedProducts } = useProducts();
   
-  useEffect(() => {
-    if (id) {
-      const foundProduct = getProductById(id);
-      
-      if (foundProduct) {
-        // Add proper image to the product if it doesn't have one
-        if (!foundProduct.image || foundProduct.image === '') {
-          foundProduct.image = getProductImage(foundProduct);
-        }
-        
-        // Make sure the product has an images array for the gallery
-        if (!foundProduct.images || foundProduct.images.length === 0) {
-          foundProduct.images = [foundProduct.image];
-        }
-        
-        setProduct(foundProduct);
-        
-        // Find related products (same category)
-        const related = getProductsByCategory(foundProduct.category)
-          .filter(p => p.id !== foundProduct.id)
-          .slice(0, 4);
-        
-        setRelatedProducts(related);
-      } else {
-        // Product not found, redirect to 404
-        navigate('/not-found');
-      }
-    }
-  }, [id, getProductById, getProductsByCategory, navigate, getProductImage]);
+  const product = getProductById(id || '');
   
   if (!product) {
     return (
       <Layout>
-        <div className="container-custom py-12">
-          <p>Loading...</p>
+        <div className="container mx-auto py-12">
+          <h1 className="text-2xl font-bold mb-4">Product Not Found</h1>
+          <p>Sorry, we couldn't find the product you're looking for.</p>
         </div>
       </Layout>
     );
   }
+  
+  const relatedProducts = getRelatedProducts(product.id);
   
   return (
     <Layout>
       <Breadcrumb 
         items={[
           { label: 'Home', path: '/' },
-          { label: product.category.charAt(0).toUpperCase() + product.category.slice(1), path: `/category/${product.category}` },
+          { label: 'Shop', path: '/shop' },
           { label: product.name, path: `/product/${product.id}` }
         ]} 
       />
       
       <div className="container-custom py-12">
         <ProductDetail product={product} />
-        {relatedProducts.length > 0 && <RelatedProducts products={relatedProducts} />}
+        
+        {relatedProducts.length > 0 && (
+          <div className="mt-16">
+            <h2 className="section-heading mb-6">Related Products</h2>
+            <RelatedProducts products={relatedProducts} />
+          </div>
+        )}
       </div>
     </Layout>
   );

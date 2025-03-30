@@ -1,41 +1,36 @@
 
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingCart, AlertCircle } from 'lucide-react';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import CartItem from '../components/cart/CartItem';
 import CartSummary from '../components/cart/CartSummary';
 import { useProducts } from '../context/ProductsContext';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
-import { ShoppingBag } from 'lucide-react';
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateCartQuantity, getCartTotal } = useProducts();
-  const [shippingCost, setShippingCost] = useState<number | 'Free'>(0);
   const navigate = useNavigate();
   
-  const handleUpdateQuantity = (id: string, quantity: number) => {
-    updateCartQuantity(id, quantity);
+  const handleRemoveItem = (productId: string) => {
+    const item = cartItems.find(item => item.product.id === productId);
+    if (item) {
+      removeFromCart(productId);
+      toast.success(`${item.product.name} removed from cart`);
+    }
   };
   
-  const handleRemoveItem = (id: string) => {
-    const item = cartItems.find(item => item.id === id);
-    if (item) {
-      removeFromCart(id);
-      toast.success(`${item.name} removed from cart`);
-    }
+  const handleUpdateQuantity = (productId: string, quantity: number) => {
+    updateCartQuantity(productId, quantity);
   };
   
   const handleCheckout = () => {
-    if (cartItems.length === 0) {
-      toast.error('Your cart is empty!');
-      return;
-    }
     navigate('/checkout');
   };
   
-  const subtotal = getCartTotal();
+  const cartSubtotal = getCartTotal();
+  const shipping = 0; // Free shipping
+  const cartTotal = cartSubtotal + shipping;
   
   return (
     <Layout>
@@ -47,53 +42,61 @@ const Cart = () => {
       />
       
       <div className="container-custom py-12">
-        <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
+        <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
         
         {cartItems.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="mb-6 flex justify-center">
-              <div className="h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center">
-                <ShoppingBag className="h-8 w-8 text-gray-500" />
-              </div>
+          <div className="text-center py-16 max-w-md mx-auto">
+            <div className="bg-gray-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingCart size={32} className="text-gray-400" />
             </div>
             <h2 className="text-2xl font-medium mb-4">Your cart is empty</h2>
             <p className="text-gray-600 mb-8">
               Looks like you haven't added anything to your cart yet.
             </p>
-            <Button onClick={() => navigate('/shop')} className="btn-primary">
+            <Link to="/shop" className="btn-primary">
               Continue Shopping
-            </Button>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <div className="grid grid-cols-12 border-b border-gray-200 p-4 bg-gray-50 text-sm font-medium text-gray-600">
-                  <div className="col-span-6">Product</div>
-                  <div className="col-span-2 text-center">Price</div>
-                  <div className="col-span-2 text-center">Quantity</div>
-                  <div className="col-span-2 text-right">Subtotal</div>
+              <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="divide-y divide-gray-200">
+                  {cartItems.map((item) => (
+                    <CartItem
+                      key={item.product.id}
+                      id={item.product.id}
+                      name={item.product.name}
+                      price={item.product.price}
+                      image={item.product.image}
+                      quantity={item.quantity}
+                      onRemove={handleRemoveItem}
+                      onUpdateQuantity={handleUpdateQuantity}
+                      color={item.selectedColor}
+                      size={item.selectedSize?.name}
+                    />
+                  ))}
                 </div>
+              </div>
+              
+              <div className="mt-6 flex justify-between">
+                <Link to="/shop" className="text-exclusive hover:underline inline-flex items-center">
+                  <span className="mr-2">←</span>
+                  Continue Shopping
+                </Link>
                 
-                {cartItems.map((item) => (
-                  <CartItem
-                    key={item.id}
-                    id={item.id}
-                    name={item.name}
-                    price={item.price}
-                    image={item.image}
-                    quantity={item.quantity}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemove={handleRemoveItem}
-                  />
-                ))}
+                <div className="flex items-center text-sm text-gray-500">
+                  <AlertCircle size={16} className="mr-2" />
+                  Prices may change depending on shipping method and taxes
+                </div>
               </div>
             </div>
             
-            <div>
-              <CartSummary 
-                subtotal={subtotal} 
-                shipping={shippingCost} 
+            <div className="lg:col-span-1">
+              <CartSummary
+                subtotal={cartSubtotal}
+                shipping={shipping}
+                total={cartTotal}
                 onCheckout={handleCheckout}
               />
             </div>

@@ -29,6 +29,12 @@ export interface CartItem {
   quantity: number;
   selectedSize?: { name: string; price: number };
   selectedColor?: string;
+  id?: string;
+  name?: string;
+  price?: number;
+  image?: string;
+  color?: string;
+  size?: string;
 }
 
 // Wishlist item
@@ -47,6 +53,10 @@ export interface Order {
   orderStatus: 'processing' | 'shipped' | 'delivered';
   orderDate: Date;
   totalAmount: number;
+  shippingAddress?: any;
+  status?: string;
+  date?: Date;
+  total?: number;
 }
 
 // State interface
@@ -91,7 +101,18 @@ const productsReducer = (state: ProductsState, action: ProductsAction): Products
         // Add new item to cart
         return { 
           ...state, 
-          cartItems: [...state.cartItems, { product, quantity, selectedSize, selectedColor }] 
+          cartItems: [...state.cartItems, { 
+            product, 
+            quantity, 
+            selectedSize, 
+            selectedColor,
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            image: product.image,
+            color: selectedColor,
+            size: selectedSize?.name
+          }] 
         };
       }
     }
@@ -134,12 +155,21 @@ const productsReducer = (state: ProductsState, action: ProductsAction): Products
         wishlistItems: state.wishlistItems.filter(item => item.product.id !== action.payload)
       };
     
-    case 'PLACE_ORDER':
+    case 'PLACE_ORDER': {
+      const order = {
+        ...action.payload,
+        status: action.payload.orderStatus,
+        date: action.payload.orderDate,
+        total: action.payload.totalAmount,
+        shippingAddress: action.payload.shippingInfo
+      };
+      
       return {
         ...state,
-        orders: [...state.orders, action.payload],
+        orders: [...state.orders, order],
         cartItems: [] // Clear cart after order placement
       };
+    }
     
     default:
       return state;
@@ -167,8 +197,10 @@ interface ProductsContextProps {
   getNewArrivals: () => Product[];
   getRelatedProducts: (productId: string) => Product[];
   getProductById: (id: string) => Product | undefined;
+  getProductsByCategory: (category: string) => Product[];
   getDiscountedProducts: (limit?: number) => Product[];
   getProductImage: (product: Product) => string;
+  getOrderById: (id: string) => Order | undefined;
 }
 
 const ProductsContext = createContext<ProductsContextProps | undefined>(undefined);
@@ -279,7 +311,11 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       paymentStatus,
       orderStatus: 'processing',
       orderDate: new Date(),
-      totalAmount: getCartTotal()
+      totalAmount: getCartTotal(),
+      status: 'processing',
+      date: new Date(),
+      total: getCartTotal(),
+      shippingAddress: shippingInfo
     };
     
     dispatch({ type: 'PLACE_ORDER', payload: order });
@@ -310,12 +346,20 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const getProductById = (id: string): Product | undefined => {
     return state.products.find(product => product.id === id);
   };
+
+  const getProductsByCategory = (category: string): Product[] => {
+    return state.products.filter(product => product.category === category);
+  };
   
   const getDiscountedProducts = (limit = 8): Product[] => {
     return state.products
       .filter(product => product.discountPercentage && product.discountPercentage > 0)
       .sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0))
       .slice(0, limit);
+  };
+
+  const getOrderById = (id: string): Order | undefined => {
+    return state.orders.find(order => order.id === id);
   };
   
   const getProductImage = (product: Product): string => {
@@ -329,57 +373,57 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       return product.image;
     }
     
-    // If not, generate specific image based on product category and name
+    // Updated images for phones and computers
     const categoryImageMap: Record<string, string[]> = {
       "phones": [
-        "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
-        "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=500",
-        "https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=500",
-        "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=500"
+        "https://s.alicdn.com/@sc04/kf/H69b6f97cd1ba42f1925ef35ad9f98289j.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H08e179ac0b374174b5e6418cbb87429b7.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H5c09b038d3ba4d18b3de20a0b1a3ff28P.png_300x300.png",
+        "https://s.alicdn.com/@sc04/kf/H689c56e92dfb4133a71b4fb61d1b3ce7C.jpg_300x300.jpg"
       ],
       "computers": [
-        "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
-        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500",
-        "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=500",
-        "https://images.unsplash.com/photo-1661961111184-11317b40adb2?w=500"
+        "https://s.alicdn.com/@sc04/kf/Hf8ba3dfa25be41baa62f8fcf471d0d4eJ.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Hf0b2ea9dc12547c9b3e14ea9a5fb7cf8Y.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H07a7bca1e0d24a79b1e21a2b091ab96cg.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Hecae9747d43e45b2b38318b033c0637dR.jpg_300x300.jpg"
       ],
       "headphones": [
-        "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=500",
-        "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500",
-        "https://images.unsplash.com/photo-1618329340733-5b27c70ba442?w=500",
-        "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=500"
+        "https://s.alicdn.com/@sc04/kf/H8dd0a3b5c1ce468c9e14b89cf35f9ee0b.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H48d39a7f49cd486cb3d7b404b3d55ad9q.png_300x300.png",
+        "https://s.alicdn.com/@sc04/kf/H3392e0f62c3641a9b4f7f03c33fff81dE.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H9d1cc7e5f3d445a3bae9448e671f9d72R.jpg_300x300.jpg"
       ],
       "gaming": [
-        "https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500",
-        "https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=500",
-        "https://images.unsplash.com/photo-1652989360948-3f32356a50b5?w=500",
-        "https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=500"
+        "https://s.alicdn.com/@sc04/kf/H5e995fe2ab274c139e67aed24d8d33b8j.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H2dc5a8fe80014b3d97fb60fc2eb5e092h.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Hbcc8acd8c29b42f5967ab11fea5c4aaaC.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H63a76cc1a6214ae28a9f5354dfb7f842C.jpg_300x300.jpg"
       ],
       "tablets": [
-        "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=500",
-        "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=500",
-        "https://images.unsplash.com/photo-1623126908029-58c1502a88d3?w=500",
-        "https://images.unsplash.com/photo-1623934103730-095532963ac7?w=500"
+        "https://s.alicdn.com/@sc04/kf/Hec909899d6e94b35b20582f96be03d7aF.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H7c2aeb14ac2a4ca5a12592aba20f7f9dR.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Hba97bf7e1ffc4c7584cfbfc9fc3ba7e8L.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Hfb69e6e3b6764143beb18e3d17d4f31cw.jpg_300x300.jpg"
       ],
       "cameras": [
-        "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500",
-        "https://images.unsplash.com/photo-1502982720700-bfff97f2ecac?w=500",
-        "https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?w=500",
-        "https://images.unsplash.com/photo-1617464653658-e0b64c6ce780?w=500"
+        "https://s.alicdn.com/@sc04/kf/Heb3f9ab38ef24639b7d4d3dac9a1e0c6r.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H08a3322324fb4175a62ed434c0d46f01h.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H0d5d4ec6d6564235886065fde2f9e7adF.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Ha5af64ac2b254c17a57cc8164c33de01K.jpg_300x300.jpg"
       ],
       "monitors": [
-        "https://images.unsplash.com/photo-1586152985844-5f392d4e7ce3?w=500",
-        "https://images.unsplash.com/photo-1616588589676-62b3bd4ff6d2?w=500",
-        "https://images.unsplash.com/photo-1586856635825-b7457a457517?w=500",
-        "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500"
+        "https://s.alicdn.com/@sc04/kf/H4af87e0f7e704a93b5c3c19991122e74a.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H6e0b9eedbc3b4a60b61abb4cec97c56fV.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/Hd90f7bfe5bfc4df29e85b4de01eac75fE.jpg_300x300.jpg",
+        "https://s.alicdn.com/@sc04/kf/H6ca6eec2deb14dde9a56d5c06f374d9cL.jpg_300x300.jpg"
       ]
     };
     
     // Get images for the product's category or use general electronics images
     const categoryImages = categoryImageMap[product.category] || [
-      "https://images.unsplash.com/photo-1526406915894-7bcd65f60845?w=500",
-      "https://images.unsplash.com/photo-1550009158-9ebf69173e03?w=500",
-      "https://images.unsplash.com/photo-1595941056519-d7e28121adc4?w=500"
+      "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/H8a1b95ada147487180a3dafedf45c8acs.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/H51af5abbc3de41c2ad37fecd1f7b3b83y.jpg_300x300.jpg"
     ];
     
     // Use name-based hashing to consistently pick the same image for the same product
@@ -410,8 +454,10 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       getNewArrivals,
       getRelatedProducts,
       getProductById,
+      getProductsByCategory,
       getDiscountedProducts,
-      getProductImage
+      getProductImage,
+      getOrderById
     }}>
       {children}
     </ProductsContext.Provider>

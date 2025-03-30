@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
@@ -9,30 +9,49 @@ import { toast } from 'sonner';
 
 const Checkout = () => {
   const { cartItems, getCartTotal, placeOrder } = useProducts();
-  const [shippingCost] = useState<number | 'Free'>('Free'); // Can be updated based on shipping method selection
   const navigate = useNavigate();
-  const subtotal = getCartTotal();
+  const [isProcessing, setIsProcessing] = useState(false);
   
-  useEffect(() => {
-    // Redirect to cart if cart is empty
-    if (cartItems.length === 0) {
-      navigate('/cart');
-      toast.error('Your cart is empty!');
-    }
-  }, [cartItems, navigate]);
-  
-  const handlePlaceOrder = (shippingInfo: any, paymentMethod: string, paymentStatus: 'pending' | 'paid') => {
+  const handlePlaceOrder = (formData: any, paymentMethod: string) => {
+    setIsProcessing(true);
+    
     try {
-      const orderId = placeOrder(shippingInfo, paymentMethod, paymentStatus);
-      
-      // Redirect to success page with the order ID
-      navigate(`/order-success?orderId=${orderId}`);
-      toast.success('Order placed successfully!');
+      // Simulate payment processing
+      setTimeout(() => {
+        // Place the order
+        const orderId = placeOrder(
+          formData, 
+          paymentMethod, 
+          paymentMethod === 'card' ? 'paid' : 'pending'
+        );
+        
+        // Redirect to success page
+        navigate(`/order-success/${orderId}`);
+        
+        toast.success('Order placed successfully!');
+        setIsProcessing(false);
+      }, 1500);
     } catch (error) {
+      console.error('Error placing order:', error);
       toast.error('Failed to place order. Please try again.');
-      console.error('Order placement error:', error);
+      setIsProcessing(false);
     }
   };
+  
+  const cartSubtotal = getCartTotal();
+  const shipping = 0; // Free shipping
+  const cartTotal = cartSubtotal + shipping;
+  
+  // Convert cart items to the expected format for CheckoutForm
+  const mappedCartItems = cartItems.map(item => ({
+    id: item.product.id,
+    name: item.product.name,
+    price: item.product.price,
+    quantity: item.quantity,
+    image: item.product.image,
+    color: item.selectedColor,
+    size: item.selectedSize?.name
+  }));
   
   return (
     <Layout>
@@ -48,9 +67,11 @@ const Checkout = () => {
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
         
         <CheckoutForm 
-          cartItems={cartItems}
-          subtotal={subtotal}
-          shipping={shippingCost}
+          cartItems={mappedCartItems}
+          subtotal={cartSubtotal}
+          shipping={shipping}
+          total={cartTotal}
+          isProcessing={isProcessing}
           onPlaceOrder={handlePlaceOrder}
         />
       </div>

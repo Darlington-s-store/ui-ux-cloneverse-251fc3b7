@@ -1,4 +1,3 @@
-
 import { Product } from '../context/ProductsContext';
 
 export const phoneProducts: Product[] = [
@@ -7,11 +6,11 @@ export const phoneProducts: Product[] = [
     name: "iPhone 13 Pro Max",
     price: 1099,
     oldPrice: 1299,
-    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aXBob25lJTIwMTMlMjBwcm98ZW58MHx8MHx8fDA%3D",
+    image: "https://s.alicdn.com/@sc04/kf/H69b6f97cd1ba42f1925ef35ad9f98289j.jpg_300x300.jpg",
     images: [
-      "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aXBob25lJTIwMTMlMjBwcm98ZW58MHx8MHx8fDA%3D",
-      "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aXBob25lJTIwMTN8ZW58MHx8MHx8fDA%3D",
-      "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGlwaG9uZXxlbnwwfHwwfHx8MA%3D%3D"
+      "https://s.alicdn.com/@sc04/kf/H69b6f97cd1ba42f1925ef35ad9f98289j.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/H08e179ac0b374174b5e6418cbb87429b7.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/Hf23f94e5a78b40c196c5be0d50c69b95r.jpg_300x300.jpg"
     ],
     rating: 4.9,
     reviewCount: 245,
@@ -34,11 +33,11 @@ export const phoneProducts: Product[] = [
     name: "Samsung Galaxy S22 Ultra",
     price: 1199,
     oldPrice: 1299,
-    image: "https://images.unsplash.com/photo-1644501625713-92a2908df9d9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2FsYXh5JTIwczIyfGVufDB8fDB8fHww",
+    image: "https://s.alicdn.com/@sc04/kf/H8c57b3deae5a46a89d8f55220e9ff303Z.jpg_300x300.jpg",
     images: [
-      "https://images.unsplash.com/photo-1644501625713-92a2908df9d9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2FsYXh5JTIwczIyfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1659030524412-e9b1d258fea3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Z2FsYXh5JTIwczIyfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1643133277733-66a476f7f20e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNhbXN1bmclMjBwaG9uZXxlbnwwfHwwfHx8MA%3D%3D"
+      "https://s.alicdn.com/@sc04/kf/H8c57b3deae5a46a89d8f55220e9ff303Z.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/Hd14f8195a06545cca81a1dedd2a0c089k.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/H97a336190e8346dfaecbdb54d4ad7f10n.jpg_300x300.jpg"
     ],
     rating: 4.8,
     reviewCount: 189,
@@ -61,11 +60,11 @@ export const phoneProducts: Product[] = [
     name: "Google Pixel 7 Pro",
     price: 899,
     oldPrice: 999,
-    image: "https://images.unsplash.com/photo-1666202452280-3b50723538e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww",
+    image: "https://s.alicdn.com/@sc04/kf/Hb3b39ca818b649ecb3e5b8af9b110bcd0.jpg_300x300.jpg",
     images: [
-      "https://images.unsplash.com/photo-1666202452280-3b50723538e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1635870664257-430f094c25e6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1596742578443-7682ef5251cd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww"
+      "https://s.alicdn.com/@sc04/kf/Hb3b39ca818b649ecb3e5b8af9b110bcd0.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/H27fcccca89f3450ca29af58ed2df5b14V.jpg_300x300.jpg",
+      "https://s.alicdn.com/@sc04/kf/Hf3b9c9a8063d4c82bb12dca033bfe3b7U.jpg_300x300.jpg"
     ],
     rating: 4.7,
     reviewCount: 156,
