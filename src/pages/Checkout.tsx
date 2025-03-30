@@ -8,7 +8,7 @@ import { useProducts } from '../context/ProductsContext';
 import { toast } from 'sonner';
 
 const Checkout = () => {
-  const { cartItems, getCartTotal } = useProducts();
+  const { cartItems, getCartTotal, placeOrder } = useProducts();
   const [shippingCost] = useState<number | 'Free'>('Free'); // Can be updated based on shipping method selection
   const navigate = useNavigate();
   const subtotal = getCartTotal();
@@ -23,7 +23,6 @@ const Checkout = () => {
   
   const handlePlaceOrder = (shippingInfo: any, paymentMethod: string, paymentStatus: 'pending' | 'paid') => {
     try {
-      const { placeOrder } = useProducts();
       const orderId = placeOrder(shippingInfo, paymentMethod, paymentStatus);
       
       // Redirect to success page with the order ID
