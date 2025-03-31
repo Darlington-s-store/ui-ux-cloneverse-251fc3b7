@@ -40,8 +40,8 @@ const WishlistItem: React.FC<WishlistItemProps> = ({
     setImgError(true);
   };
   
-  // Fallback image if the original one fails to load
-  const fallbackImage = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
+  // Updated fallback image for consistency
+  const fallbackImage = "https://ae01.alicdn.com/kf/S7de15e8536664332b478d953ea4e444dN/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg";
   
   return (
     <div className="group bg-white rounded-lg p-4 border border-gray-200 relative">

@@ -6,11 +6,77 @@ import Breadcrumb from '../components/layout/Breadcrumb';
 import ProductCard from '../components/products/ProductCard';
 import { useProducts } from '../context/ProductsContext';
 import { Product } from '../context/ProductsContext';
-import { Filter, SlidersHorizontal, Check } from 'lucide-react';
+import { Filter, SlidersHorizontal, Check, ChevronDown } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+// Subcategories for each main category
+const categorySubcategories = {
+  'phones': [
+    { id: 'smartphones', name: 'Smartphones', count: 30 },
+    { id: 'flagship-phones', name: 'Flagship Phones', count: 10 },
+    { id: 'budget-phones', name: 'Budget Phones', count: 15 },
+    { id: 'foldable-phones', name: 'Foldable Phones', count: 5 },
+    { id: 'android-phones', name: 'Android Phones', count: 25 },
+    { id: 'ios-phones', name: 'iOS Phones', count: 15 }
+  ],
+  'computers': [
+    { id: 'laptops', name: 'Laptops', count: 20 },
+    { id: 'gaming-laptops', name: 'Gaming Laptops', count: 10 },
+    { id: 'macbooks', name: 'MacBooks', count: 5 },
+    { id: 'desktops', name: 'Desktop PCs', count: 8 },
+    { id: 'all-in-one', name: 'All-in-One PCs', count: 7 }
+  ],
+  'gaming': [
+    { id: 'consoles', name: 'Gaming Consoles', count: 5 },
+    { id: 'controllers', name: 'Controllers', count: 15 },
+    { id: 'gaming-headsets', name: 'Gaming Headsets', count: 12 },
+    { id: 'gaming-mice', name: 'Gaming Mice', count: 20 },
+    { id: 'gaming-keyboards', name: 'Gaming Keyboards', count: 18 }
+  ],
+  'headphones': [
+    { id: 'wireless-headphones', name: 'Wireless Headphones', count: 25 },
+    { id: 'earbuds', name: 'Earbuds', count: 20 },
+    { id: 'over-ear', name: 'Over-Ear Headphones', count: 15 },
+    { id: 'noise-cancelling', name: 'Noise Cancelling', count: 10 }
+  ],
+  'monitors': [
+    { id: 'gaming-monitors', name: 'Gaming Monitors', count: 15 },
+    { id: 'ultrawide', name: 'Ultrawide Monitors', count: 8 },
+    { id: '4k-monitors', name: '4K Monitors', count: 12 },
+    { id: 'curved-monitors', name: 'Curved Monitors', count: 5 }
+  ],
+  'accessories': [
+    { id: 'phone-cases', name: 'Phone Cases', count: 30 },
+    { id: 'screen-protectors', name: 'Screen Protectors', count: 15 },
+    { id: 'chargers', name: 'Chargers & Cables', count: 25 },
+    { id: 'power-banks', name: 'Power Banks', count: 10 },
+    { id: 'storage', name: 'Storage Solutions', count: 8 }
+  ],
+  'smart-home': [
+    { id: 'smart-speakers', name: 'Smart Speakers', count: 10 },
+    { id: 'smart-lighting', name: 'Smart Lighting', count: 15 },
+    { id: 'smart-security', name: 'Security Cameras', count: 8 },
+    { id: 'smart-thermostats', name: 'Smart Thermostats', count: 5 }
+  ],
+  'wearables': [
+    { id: 'smartwatches', name: 'Smartwatches', count: 20 },
+    { id: 'fitness-trackers', name: 'Fitness Trackers', count: 15 },
+    { id: 'vr-headsets', name: 'VR Headsets', count: 5 }
+  ],
+  'cameras': [
+    { id: 'dslr', name: 'DSLR Cameras', count: 10 },
+    { id: 'mirrorless', name: 'Mirrorless Cameras', count: 12 },
+    { id: 'action-cameras', name: 'Action Cameras', count: 5 }
+  ],
+  'tablets': [
+    { id: 'ipads', name: 'iPads', count: 8 },
+    { id: 'android-tablets', name: 'Android Tablets', count: 12 },
+    { id: 'windows-tablets', name: 'Windows Tablets', count: 5 }
+  ]
+};
 
 // Price Range options
 const priceRanges = [
@@ -42,6 +108,10 @@ const CategoryPage = () => {
   const [categoryName, setCategoryName] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [showSort, setShowSort] = useState(false);
+  const [showSubcategories, setShowSubcategories] = useState(true);
+  
+  // Subcategory state
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
   
   // Filter states
   const [selectedPriceRanges, setSelectedPriceRanges] = useState<string[]>([]);
@@ -89,6 +159,18 @@ const CategoryPage = () => {
     if (selectedRating) {
       result = result.filter(product => product.rating >= selectedRating);
     }
+
+    // Apply subcategory filter (simulated since we don't have actual subcategory data)
+    if (selectedSubcategory) {
+      // This is a simulation - in a real app, products would have subcategory property
+      // Here we're just filtering to show fewer products when a subcategory is selected
+      result = result.filter((_, index) => {
+        // Show every third product for the first subcategory, every fourth for second, etc.
+        const subcategories = categorySubcategories[slug as keyof typeof categorySubcategories] || [];
+        const subcategoryIndex = subcategories.findIndex(sc => sc.id === selectedSubcategory);
+        return index % (subcategoryIndex + 3) === 0;
+      });
+    }
     
     // Apply sorting
     if (sortOption) {
@@ -113,7 +195,7 @@ const CategoryPage = () => {
     }
     
     setFilteredProducts(result);
-  }, [categoryProducts, selectedPriceRanges, selectedRating, sortOption]);
+  }, [categoryProducts, selectedPriceRanges, selectedRating, sortOption, selectedSubcategory, slug]);
   
   // Handle price range selection
   const handlePriceRangeChange = (id: string, checked: boolean) => {
@@ -135,12 +217,21 @@ const CategoryPage = () => {
     setShowSort(false);
   };
   
+  // Handle subcategory selection
+  const handleSubcategoryChange = (subcategoryId: string) => {
+    setSelectedSubcategory(prev => prev === subcategoryId ? null : subcategoryId);
+  };
+  
   // Reset all filters
   const resetFilters = () => {
     setSelectedPriceRanges([]);
     setSelectedRating(null);
     setSortOption('');
+    setSelectedSubcategory(null);
   };
+
+  // Get current subcategories
+  const subcategories = slug ? (categorySubcategories[slug as keyof typeof categorySubcategories] || []) : [];
   
   return (
     <Layout>
@@ -171,7 +262,7 @@ const CategoryPage = () => {
             >
               <Filter size={16} />
               Filters
-              {selectedPriceRanges.length > 0 || selectedRating !== null ? (
+              {(selectedPriceRanges.length > 0 || selectedRating !== null) ? (
                 <span className="bg-exclusive text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
                   {selectedPriceRanges.length + (selectedRating !== null ? 1 : 0)}
                 </span>
@@ -212,12 +303,49 @@ const CategoryPage = () => {
           </div>
         </div>
         
+        {/* Subcategories bar */}
+        {subcategories.length > 0 && (
+          <div className="mb-6 border border-gray-200 rounded-lg p-4 bg-white">
+            <div className="flex justify-between items-center mb-2">
+              <h3 className="font-medium">Subcategories</h3>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex items-center gap-1 text-sm text-gray-500"
+                onClick={() => setShowSubcategories(!showSubcategories)}
+              >
+                {showSubcategories ? 'Hide' : 'Show'}
+                <ChevronDown className={`h-4 w-4 transition-transform ${showSubcategories ? 'transform rotate-180' : ''}`} />
+              </Button>
+            </div>
+            
+            {showSubcategories && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                {subcategories.map(subcategory => (
+                  <button
+                    key={subcategory.id}
+                    onClick={() => handleSubcategoryChange(subcategory.id)}
+                    className={`text-sm px-3 py-2 rounded-md transition-colors text-left ${
+                      selectedSubcategory === subcategory.id 
+                        ? 'bg-black text-white' 
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                  >
+                    {subcategory.name}
+                    <span className="text-xs ml-2 opacity-70">({subcategory.count})</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        
         <div className="flex flex-col md:flex-row gap-6">
           {showFilters && (
             <div className="w-full md:w-64 bg-white p-4 rounded-lg border border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-medium">Filters</h3>
-                {(selectedPriceRanges.length > 0 || selectedRating !== null) && (
+                {(selectedPriceRanges.length > 0 || selectedRating !== null || selectedSubcategory) && (
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -272,7 +400,7 @@ const CategoryPage = () => {
             {filteredProducts.length === 0 ? (
               <div className="text-center py-20">
                 <p className="text-xl text-gray-600">No products found in this category.</p>
-                {(selectedPriceRanges.length > 0 || selectedRating !== null) && (
+                {(selectedPriceRanges.length > 0 || selectedRating !== null || selectedSubcategory) && (
                   <Button 
                     variant="outline" 
                     onClick={resetFilters}
