@@ -7,6 +7,7 @@ import { ProductsProvider } from './context/ProductsContext';
 import Home from './pages/Index';
 import Product from './pages/Product';
 import CategoryPage from './pages/CategoryPage';
+import Categories from './pages/Categories';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
@@ -30,6 +31,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/product/:id" element={<Product />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
+          <Route path="/categories" element={<Categories />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success/:orderId" element={<OrderSuccess />} />
