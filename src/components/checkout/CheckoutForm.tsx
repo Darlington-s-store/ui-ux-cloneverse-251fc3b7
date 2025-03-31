@@ -1,9 +1,9 @@
+
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { CreditCard, Wallet, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PaymentForm from './PaymentForm';
+import { CheckCircle } from "lucide-react";
 
 interface CheckoutFormProps {
   cartItems: {
@@ -58,10 +58,10 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     }));
   };
   
-  const handleRadioChange = (value: string) => {
+  const handlePaymentMethodSelect = (method: string) => {
     setFormData(prev => ({
       ...prev,
-      paymentMethod: value
+      paymentMethod: method
     }));
   };
   
@@ -100,7 +100,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     toast.success('Coupon applied successfully!');
   };
   
-  const processPayment = () => {
+  const processPayment = (cardDetails?: any) => {
     setPaymentProcessing(true);
     
     // Simulate payment processing
@@ -115,11 +115,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         city: formData.city,
         state: formData.state || 'CA',
         zipCode: formData.zipCode,
-        country: formData.country
+        country: formData.country,
+        email: formData.email,
+        phone: formData.phoneNumber
       };
       
       // Process order
-      const paymentStatus = formData.paymentMethod === 'cash' ? 'pending' : 'paid';
       onPlaceOrder(shippingInfo, formData.paymentMethod);
     }, 2000);
   };
@@ -322,126 +323,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         
         {/* Step 2: Payment Method */}
         {step === 2 && (
-          <>
-            <h2 className="text-2xl font-semibold mb-6">Payment Method</h2>
-            <div className="mb-8">
-              <RadioGroup
-                value={formData.paymentMethod}
-                onValueChange={handleRadioChange}
-                className="space-y-4"
-              >
-                <div className="flex items-center justify-between space-x-2 p-4 border rounded-md hover:border-exclusive transition-colors">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="credit" id="credit" />
-                    <Label htmlFor="credit" className="flex items-center gap-2">
-                      <CreditCard size={18} /> Credit Card
-                    </Label>
-                  </div>
-                  <div className="flex space-x-1">
-                    <img src="https://images.unsplash.com/photo-1542309170-05c06d1703f5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Y3JlZGl0JTIwY2FyZHxlbnwwfHwwfHx8MA%3D%3D" alt="Visa" className="h-6 w-auto" />
-                    <img src="https://images.unsplash.com/photo-1588250894213-88a5c6ffd615?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGNyZWRpdCUyMGNhcmR8ZW58MHx8MHx8MA%3D%3D" alt="Mastercard" className="h-6 w-auto" />
-                  </div>
-                </div>
-                
-                {formData.paymentMethod === 'credit' && (
-                  <div className="p-4 border rounded-md border-exclusive">
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Card Number*</label>
-                        <input
-                          type="text"
-                          placeholder="1234 5678 9012 3456"
-                          className="input-primary w-full"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Expiration Date*</label>
-                          <input
-                            type="text"
-                            placeholder="MM/YY"
-                            className="input-primary w-full"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">CVV*</label>
-                          <input
-                            type="text"
-                            placeholder="123"
-                            className="input-primary w-full"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Name on Card*</label>
-                        <input
-                          type="text"
-                          placeholder="John Doe"
-                          className="input-primary w-full"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <div className="flex items-center justify-between space-x-2 p-4 border rounded-md hover:border-exclusive transition-colors">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="paypal" id="paypal" />
-                    <Label htmlFor="paypal">PayPal</Label>
-                  </div>
-                  <img src="https://images.unsplash.com/photo-1634403665481-74029226fa95?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHBheXBhbHxlbnwwfHwwfHx8MA%3D%3D" alt="PayPal" className="h-6 w-auto" />
-                </div>
-                
-                <div className="flex items-center justify-between space-x-2 p-4 border rounded-md hover:border-exclusive transition-colors">
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="cash" id="cash" />
-                    <Label htmlFor="cash" className="flex items-center gap-2">
-                      <Wallet size={18} /> Cash on delivery
-                    </Label>
-                  </div>
-                </div>
-              </RadioGroup>
-            </div>
-            
-            {/* Coupon Code */}
-            <div className="mb-8">
-              <h3 className="text-lg font-medium mb-2">Have a coupon?</h3>
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  name="couponCode"
-                  placeholder="Coupon Code"
-                  value={formData.couponCode}
-                  onChange={handleChange}
-                  className="input-primary flex-grow"
-                />
-                <button
-                  type="button"
-                  onClick={handleApplyCoupon}
-                  className="bg-exclusive hover:bg-exclusive-dark text-white py-2 px-4 rounded-md transition-colors whitespace-nowrap"
-                >
-                  Apply
-                </button>
-              </div>
-            </div>
-            
-            <div className="flex gap-4 pt-4">
-              <Button 
-                onClick={handlePreviousStep}
-                variant="outline"
-                className="w-1/2 md:w-auto py-3 px-8 rounded-md transition-colors"
-              >
-                Back to Shipping
-              </Button>
-              
-              <Button 
-                onClick={handleNextStep}
-                className="w-1/2 md:w-auto bg-exclusive hover:bg-exclusive-dark text-white py-3 px-8 rounded-md transition-colors"
-              >
-                Review Order
-              </Button>
-            </div>
-          </>
+          <PaymentForm 
+            total={total}
+            onPaymentMethodSelect={handlePaymentMethodSelect}
+            onProcessPayment={processPayment}
+            isProcessing={paymentProcessing}
+          />
         )}
         
         {/* Step 3: Order Confirmation */}
@@ -463,9 +350,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
               <div className="bg-gray-50 p-4 rounded-md border">
                 <h3 className="text-lg font-medium mb-3">Payment Method</h3>
                 <p className="flex items-center">
-                  {formData.paymentMethod === 'credit' && <><CreditCard size={18} className="mr-2" /> Credit Card</>}
+                  {formData.paymentMethod === 'credit' && <> Credit Card</>}
                   {formData.paymentMethod === 'paypal' && <>PayPal</>}
-                  {formData.paymentMethod === 'cash' && <><Wallet size={18} className="mr-2" /> Cash on Delivery</>}
+                  {formData.paymentMethod === 'cash' && <> Cash on Delivery</>}
                 </p>
               </div>
               
@@ -502,28 +389,19 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 </div>
               </div>
               
-              <div className="flex gap-4 pt-4">
-                <Button 
-                  onClick={handlePreviousStep}
-                  variant="outline"
-                  className="w-1/2 md:w-auto py-3 px-8 rounded-md transition-colors"
-                  disabled={paymentProcessing}
-                >
-                  Back to Payment
-                </Button>
-                
+              <div className="p-6 border rounded-md bg-green-50 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+                  <CheckCircle className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-medium mb-2">Your order has been received!</h3>
+                <p className="text-gray-600 mb-4">
+                  Thank you for your purchase. Your order is being processed.
+                </p>
                 <Button 
                   onClick={processPayment}
-                  className="w-1/2 md:w-auto bg-exclusive hover:bg-exclusive-dark text-white py-3 px-8 rounded-md transition-colors"
-                  disabled={paymentProcessing}
+                  className="bg-exclusive hover:bg-exclusive-dark text-white py-3 px-8 rounded-md transition-colors"
                 >
-                  {paymentProcessing ? (
-                    <span className="flex items-center">
-                      <span className="animate-spin mr-2">⏳</span> Processing...
-                    </span>
-                  ) : (
-                    'Place Order'
-                  )}
+                  Place Order Now
                 </Button>
               </div>
             </div>
@@ -558,6 +436,27 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
                 </div>
               </div>
             ))}
+          </div>
+          
+          {/* Coupon Code */}
+          <div className="mb-6">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                name="couponCode"
+                placeholder="Coupon Code"
+                value={formData.couponCode}
+                onChange={handleChange}
+                className="input-primary flex-grow"
+              />
+              <button
+                type="button"
+                onClick={handleApplyCoupon}
+                className="bg-exclusive hover:bg-exclusive-dark text-white py-2 px-4 rounded-md transition-colors whitespace-nowrap"
+              >
+                Apply
+              </button>
+            </div>
           </div>
           
           {/* Subtotal, Shipping, Total */}

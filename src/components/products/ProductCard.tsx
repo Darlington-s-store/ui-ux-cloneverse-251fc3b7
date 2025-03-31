@@ -30,16 +30,25 @@ const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
   const { addToCart, addToWishlist, getProductById } = useProducts();
   
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
+    setIsAddingToCart(true);
+    
     const product = getProductById(id);
     if (product) {
-      addToCart(product);
-      toast.success(`${name} added to cart`);
+      // Simulate API call or processing delay
+      setTimeout(() => {
+        addToCart(product);
+        toast.success(`${name} added to cart`);
+        setIsAddingToCart(false);
+      }, 500);
+    } else {
+      setIsAddingToCart(false);
     }
   };
   
@@ -130,10 +139,19 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className={`mt-3 transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
         <button
           onClick={handleAddToCart}
+          disabled={isAddingToCart}
           className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
         >
-          <ShoppingCart size={16} />
-          <span>Add To Cart</span>
+          {isAddingToCart ? (
+            <span className="flex items-center justify-center">
+              <span className="animate-spin mr-2">⏳</span> Adding...
+            </span>
+          ) : (
+            <>
+              <ShoppingCart size={16} />
+              <span>Add To Cart</span>
+            </>
+          )}
         </button>
       </div>
     </div>

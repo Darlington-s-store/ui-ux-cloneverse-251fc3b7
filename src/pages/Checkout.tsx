@@ -16,24 +16,31 @@ const Checkout = () => {
     setIsProcessing(true);
     
     try {
-      // Simulate payment processing
+      // Simulate payment processing based on method
+      const processingTime = paymentMethod === 'cash' ? 1000 : 2000;
+      
       setTimeout(() => {
         // Place the order
         const orderId = placeOrder(
           formData, 
           paymentMethod, 
-          paymentMethod === 'card' ? 'paid' : 'pending'
+          paymentMethod === 'credit' || paymentMethod === 'paypal' ? 'paid' : 'pending'
         );
         
-        // Redirect to success page
-        navigate(`/order-success/${orderId}`);
+        // Show success message
+        toast.success('Payment processed successfully!');
         
-        toast.success('Order placed successfully!');
-        setIsProcessing(false);
-      }, 1500);
+        // Short delay before redirecting to success page
+        setTimeout(() => {
+          // Redirect to success page
+          navigate(`/order-success/${orderId}`);
+          setIsProcessing(false);
+        }, 500);
+      }, processingTime);
+      
     } catch (error) {
       console.error('Error placing order:', error);
-      toast.error('Failed to place order. Please try again.');
+      toast.error('Failed to process payment. Please try again.');
       setIsProcessing(false);
     }
   };
