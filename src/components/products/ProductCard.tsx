@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, Eye, ShoppingCart } from 'lucide-react';
+import { Heart, Eye, ShoppingCart, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { useProducts } from '../../context/ProductsContext';
 
@@ -64,9 +64,6 @@ const ProductCard: React.FC<ProductCardProps> = ({
     setImgError(true);
   };
   
-  // Improved fallback image handling
-  const fallbackImage = "https://ae01.alicdn.com/kf/S7de15e8536664332b478d953ea4e444dN/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg";
-  
   return (
     <div 
       className="group relative"
@@ -81,12 +78,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {isNew && (
             <span className="bg-green-500 text-white text-xs px-2 py-1 rounded absolute top-2 left-2">NEW</span>
           )}
-          <img 
-            src={imgError ? fallbackImage : image} 
-            alt={name} 
-            className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
-            onError={handleImageError}
-          />
+          
+          {imgError ? (
+            <div className="w-full h-full flex flex-col items-center justify-center p-4 text-gray-400">
+              <ImageIcon size={48} />
+              <span className="mt-2 text-xs text-center text-gray-500 line-clamp-2">{name}</span>
+            </div>
+          ) : (
+            <img 
+              src={image} 
+              alt={name} 
+              className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+              onError={handleImageError}
+            />
+          )}
           
           <div className={`absolute top-2 right-2 flex flex-col gap-2 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
             <button 

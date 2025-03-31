@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, Image as ImageIcon } from 'lucide-react';
 
 interface ProductImagesProps {
   images: string[];
@@ -14,6 +14,7 @@ const ProductImages: React.FC<ProductImagesProps> = ({
 }) => {
   const [activeImage, setActiveImage] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [imageErrors, setImageErrors] = useState<boolean[]>([]);
   
   // Create an array of images, ensuring there's at least one valid image
   const productImages = React.useMemo(() => {
@@ -33,8 +34,13 @@ const ProductImages: React.FC<ProductImagesProps> = ({
     }
     
     // Last resort: use a placeholder
-    return ["https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg"];
+    return ["https://ae01.alicdn.com/kf/S7de15e8536664332b478d953ea4e444dN/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg"];
   }, [images, defaultImage]);
+  
+  // Initialize imageErrors array
+  useEffect(() => {
+    setImageErrors(new Array(productImages.length).fill(false));
+  }, [productImages]);
   
   // Reset active image when images change
   useEffect(() => {
@@ -58,21 +64,36 @@ const ProductImages: React.FC<ProductImagesProps> = ({
     setActiveImage((prev) => (prev - 1 + productImages.length) % productImages.length);
   };
   
+  const handleImageError = (index: number) => {
+    setImageErrors(prev => {
+      const newErrors = [...prev];
+      newErrors[index] = true;
+      return newErrors;
+    });
+  };
+  
+  // Improved fallback images based on category
+  const fallbackImage = "https://ae01.alicdn.com/kf/S7de15e8536664332b478d953ea4e444dN/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg";
+  
   return (
     <div>
       <div 
         className="aspect-square bg-gray-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden cursor-pointer"
         onClick={() => openLightbox(activeImage)}
       >
-        <img
-          src={productImages[activeImage]}
-          alt={name}
-          className="max-h-full max-w-full object-contain transition-transform hover:scale-105"
-          onError={(e) => {
-            // If image fails to load, replace with placeholder
-            (e.target as HTMLImageElement).src = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
-          }}
-        />
+        {imageErrors[activeImage] ? (
+          <div className="flex flex-col items-center justify-center p-6 text-gray-400">
+            <ImageIcon size={64} />
+            <span className="mt-2 text-sm">{name}</span>
+          </div>
+        ) : (
+          <img
+            src={productImages[activeImage]}
+            alt={name}
+            className="max-h-full max-w-full object-contain transition-transform hover:scale-105"
+            onError={() => handleImageError(activeImage)}
+          />
+        )}
       </div>
       
       {productImages.length > 1 && (
@@ -85,15 +106,18 @@ const ProductImages: React.FC<ProductImagesProps> = ({
               }`}
               onClick={() => setActiveImage(index)}
             >
-              <img
-                src={image}
-                alt={`${name} - view ${index + 1}`}
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  // If thumbnail fails to load, replace with placeholder
-                  (e.target as HTMLImageElement).src = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
-                }}
-              />
+              {imageErrors[index] ? (
+                <div className="flex items-center justify-center h-full text-gray-400">
+                  <ImageIcon size={24} />
+                </div>
+              ) : (
+                <img
+                  src={image}
+                  alt={`${name} - view ${index + 1}`}
+                  className="w-full h-full object-contain"
+                  onError={() => handleImageError(index)}
+                />
+              )}
             </div>
           ))}
         </div>
@@ -119,15 +143,19 @@ const ProductImages: React.FC<ProductImagesProps> = ({
               </button>
               
               <div className="bg-white p-2 rounded max-h-[80vh] flex items-center justify-center">
-                <img
-                  src={productImages[activeImage]}
-                  alt={name}
-                  className="max-h-full max-w-full object-contain"
-                  onError={(e) => {
-                    // If lightbox image fails to load, replace with placeholder
-                    (e.target as HTMLImageElement).src = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
-                  }}
-                />
+                {imageErrors[activeImage] ? (
+                  <div className="flex flex-col items-center justify-center p-6 text-gray-400">
+                    <ImageIcon size={96} />
+                    <span className="mt-2 text-sm">{name}</span>
+                  </div>
+                ) : (
+                  <img
+                    src={productImages[activeImage]}
+                    alt={name}
+                    className="max-h-full max-w-full object-contain"
+                    onError={() => handleImageError(activeImage)}
+                  />
+                )}
               </div>
               
               <button 
@@ -139,7 +167,7 @@ const ProductImages: React.FC<ProductImagesProps> = ({
             </div>
             
             {productImages.length > 1 && (
-              <div className="flex justify-center mt-4">
+              <div className="flex justify-center mt-4 overflow-x-auto">
                 {productImages.map((image, index) => (
                   <div
                     key={index}
@@ -148,15 +176,18 @@ const ProductImages: React.FC<ProductImagesProps> = ({
                     }`}
                     onClick={() => setActiveImage(index)}
                   >
-                    <img
-                      src={image}
-                      alt={`${name} - view ${index + 1}`}
-                      className="w-full h-full object-contain"
-                      onError={(e) => {
-                        // If thumbnail fails to load, replace with placeholder
-                        (e.target as HTMLImageElement).src = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
-                      }}
-                    />
+                    {imageErrors[index] ? (
+                      <div className="flex items-center justify-center h-full text-gray-400">
+                        <ImageIcon size={16} />
+                      </div>
+                    ) : (
+                      <img
+                        src={image}
+                        alt={`${name} - view ${index + 1}`}
+                        className="w-full h-full object-contain"
+                        onError={() => handleImageError(index)}
+                      />
+                    )}
                   </div>
                 ))}
               </div>

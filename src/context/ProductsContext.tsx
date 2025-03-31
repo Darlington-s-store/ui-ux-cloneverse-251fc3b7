@@ -363,7 +363,7 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
   
   const getProductImage = (product: Product): string => {
-    // If product has specific images, use them and check if they're valid
+    // Priority 1: Check if product has valid images array
     if (product.images && product.images.length > 0) {
       const validImage = product.images.find(img => 
         img && !img.includes('undefined') && !img.includes('null')
@@ -371,62 +371,84 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (validImage) return validImage;
     }
     
-    // Otherwise, if it has a valid image, use that
+    // Priority 2: Check if product has a valid main image
     if (product.image && !product.image.includes('undefined') && !product.image.includes('null')) {
       return product.image;
     }
     
-    // Updated images for phones and computers
+    // Priority 3: Use category-specific images with better AliExpress sources
     const categoryImageMap: Record<string, string[]> = {
       "phones": [
-        "https://s.alicdn.com/@sc04/kf/H69b6f97cd1ba42f1925ef35ad9f98289j.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H08e179ac0b374174b5e6418cbb87429b7.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H5c09b038d3ba4d18b3de20a0b1a3ff28P.png_300x300.png",
-        "https://s.alicdn.com/@sc04/kf/H689c56e92dfb4133a71b4fb61d1b3ce7C.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S7de15e8536664332b478d953ea4e444dN/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S552726afd580451fa58bde9bb4bad3d84/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S21c32a4e89334742b765e077fa9efd02X/Xiaomi-13T-Pro-5G-Phone-Global-Version-512GB-12GB-Dimensity-9200-200MP-Triple-AI-Camera-5000mAh.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S0fecb147b4074048a2af4619ffbbcdcdX/IPhone-15-Pro-Max-Phone-Global-Version-A17-Pro-Chip-48MP-Camera-6-7-Super-Retina.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S21c32a4e89334742b765e077fa9efd02X/Xiaomi-13T-Pro-5G-Phone-Global-Version-512GB-12GB-Dimensity-9200-200MP-Triple-AI-Camera-5000mAh.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S5d6fbf9f76614abda24a00d8d8ba2e0dI/Global-Version-Xiaomi-Redmi-Note-13-Smartphone-108MP-Camera-120Hz-AMOLED-5000mAh-Dual-Sim-Card-Google.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S0a0686d8c7fb4b43a25c9cf14a830c1dp/Global-Version-OnePlus-12-5G-Smartphone-24GB-1TB-Snapdragon-8-Gen-3-6-82-2K-120Hz.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sb1b1dc8bd09d4c63b7234fdae2bdc7af1/Original-HONOR-90-GT-5G-Smart-Phone-Snapdragon-8-Gen-2-120W-SuperCharge-NFC-50MP-Camera.jpg_220x220.jpg"
       ],
       "computers": [
-        "https://s.alicdn.com/@sc04/kf/Hf8ba3dfa25be41baa62f8fcf471d0d4eJ.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Hf0b2ea9dc12547c9b3e14ea9a5fb7cf8Y.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H07a7bca1e0d24a79b1e21a2b091ab96cg.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Hecae9747d43e45b2b38318b033c0637dR.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S9e7bcd0d6eee4b5593e69a1400c21a0ev/T-Book-X11-Pro-16GB-RAM-512GB-SSD-Laptop-Computers-i7-6500U-15-6-inch-IPS.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sd9d4e82013944d8faef6ea9e28d4d54eH/New-Arrivals-15-6-inch-FHD-IPS-Display-Intel-Core-i7-1165G7-Quad-Core-16GB-RAM.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S20d6e43a2d0e4d0c9f19c1a05a70b0aaI/KUU-K1-Pro-Intel-N5100-Laptops-15-6-inch-IPS-1920-1080-Windows-11-Student-Office.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S6acc0e4ab85a4beda9ac95f3ae7b273eH/2023-Cheapest-Gaming-Laptop-Ultrabook-I7-15-6-Intel-Core-i3-i5-i7-16GB-RAM-DIY.jpg_220x220.jpg"
       ],
       "headphones": [
-        "https://s.alicdn.com/@sc04/kf/H8dd0a3b5c1ce468c9e14b89cf35f9ee0b.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H48d39a7f49cd486cb3d7b404b3d55ad9q.png_300x300.png",
-        "https://s.alicdn.com/@sc04/kf/H3392e0f62c3641a9b4f7f03c33fff81dE.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H9d1cc7e5f3d445a3bae9448e671f9d72R.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S07c2c5266a03496da6e6940d347855e7r/Quies-S36-Bluetooth-Headphones-Over-Ear-Wireless-Headphones-with-Mic-Hi-Fi-Sound-Headsets-50H-Playtime.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S5a88a0c32f5349acb2e8f52c3b4fda05Y/Head-Mounted-Wired-Gaming-Headset-With-Microphone-Headphones-Surround-Sound-USB-3-5-mm-Earphone-RGB.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sbe7e5c3e5ba0436bbe99d5e2b6b1d31es/ANC-Headphones-Active-Noise-Cancelling-Bluetooth-5-0-Headset-Over-Ear-Wireless-Earphones-with-Microphone-for.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sf4e2c94b071647db8cb3cb60ecc3d8c3H/Bluetooth-5-3-Headphones-Stereo-Over-Ear-Wireless-Headset-with-Microphone-Ear-Cushions-Replaceable-Hi-Fi.jpg_220x220.jpg"
       ],
       "gaming": [
-        "https://s.alicdn.com/@sc04/kf/H5e995fe2ab274c139e67aed24d8d33b8j.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H2dc5a8fe80014b3d97fb60fc2eb5e092h.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Hbcc8acd8c29b42f5967ab11fea5c4aaaC.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H63a76cc1a6214ae28a9f5354dfb7f842C.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S6fa81c62c78c452d9e3ccbba0d10e1d7Q/Gaming-Keyboard-Mechanical-Keyboard-RGB-Rainbow-Backlit-Computer-Keyboard-Mechanical-Feeling-104-Keys-Wired-Keyboard-Mouse.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S31881d9b6d524f0885b6d8e823c4cc07X/ABKONCORE-One-Handed-Gaming-Keyboard-RGB-Light-39-Keys-Membrane-Mini-Gaming-Keypad-with-Wrist-Rest.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S0de45c8b9f0b48639d9e6d3c00f35d63v/Wireless-Controller-for-PS5-Controller-Bluetooth-Gamepad-for-Playstation-5-Joystick-Console-Game-Joypad-with-Programmable.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sff75cf9b113c4049b7b06be6a49b3583a/New-Wireless-Gamepad-for-PS4-Controller-Bluetooth-USB-Wired-for-Playstation-4-Joystick-Console-Game-Joypad.jpg_220x220.jpg"
       ],
       "tablets": [
-        "https://s.alicdn.com/@sc04/kf/Hec909899d6e94b35b20582f96be03d7aF.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H7c2aeb14ac2a4ca5a12592aba20f7f9dR.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Hba97bf7e1ffc4c7584cfbfc9fc3ba7e8L.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Hfb69e6e3b6764143beb18e3d17d4f31cw.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S1ae6e5c0b04046afa23f2d5ec2bcfd3bu/ALLDOCUBE-iPlay-50-Mini-Pro-Tablet-8-4-inch-Android-13-T616-Octa-Core-6GB-RAM.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S1f6c49fe5fbd4c0a8ce4d7e3d4bbcfebU/ALLDOCUBE-iPlay-50-Pro-2023-Tablet-PC-12GB-RAM-256GB-ROM-10-36-inch-2K-Screen.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S3d0f5a6a41e94b8ea6f9b1ebee5d7c0ct/Android-13-Tablet-PC-10-1-inch-IPS-HD-Screen-Octa-Core-4G-RAM-128G-ROM.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S34aeab00e7a7459593ae8f28ef8b4cc0G/Xiaomi-Pad-6-Pro-8-8GB-RAM-128GB-ROM-Tablet-PC-Mediatek-Dimensity-9000-Octa-Core.jpg_220x220.jpg"
       ],
       "cameras": [
-        "https://s.alicdn.com/@sc04/kf/Heb3f9ab38ef24639b7d4d3dac9a1e0c6r.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H08a3322324fb4175a62ed434c0d46f01h.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H0d5d4ec6d6564235886065fde2f9e7adF.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Ha5af64ac2b254c17a57cc8164c33de01K.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S59d0c1a20d79447196e1d2f06eb3c8aav/Digital-Video-Camera-Handheld-Digital-Camcorder-HD-1080P-Vlogging-Camera-Video-Camera-16X-Digital-Zoom-with.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S0d93e4c5c52f4eb6aad3fdcfb3e8b894d/New-Professional-Digital-Camera-Camcorder-4K-Ultra-HD-WiFi-Video-Camcorder-3-0-Inch-Flip-Screen.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S2a0fabc3b35b4df7a5aacc16cf72c4a3F/Professional-4K-HD-camera-48MP-16X-Digital-camera-Travel-Vlog-camera-SLR-flip-screen-camera-External.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sf98aed89b51147f39f3b12f3e0b02266k/4K-HD-Camera-Professional-Photography-32MP-16X-Digital-Camera-Zoom-VLOG-WiFi-Cameras-for-YouTube-Flip.jpg_220x220.jpg"
       ],
       "monitors": [
-        "https://s.alicdn.com/@sc04/kf/H4af87e0f7e704a93b5c3c19991122e74a.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H6e0b9eedbc3b4a60b61abb4cec97c56fV.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/Hd90f7bfe5bfc4df29e85b4de01eac75fE.jpg_300x300.jpg",
-        "https://s.alicdn.com/@sc04/kf/H6ca6eec2deb14dde9a56d5c06f374d9cL.jpg_300x300.jpg"
+        "https://ae01.alicdn.com/kf/S2e8b621bc4514aa1a4c9d80e20b2ed74d/ALLDOCUBE-C27-Smart-Monitor-IPS-LCD-Computer-Monitor-Portable-Monitor-with-Type-C-100-sRGB-Monitor.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Se3e82e43dfde40fb8dc60adcb4ec6fc9i/ALLDOCUBE-15-6-inch-Portable-Gaming-Monitor-1920-1080-Full-HD-IPS-LCD-Display-Type-C-HDMI.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S1f3eb5e51a3e4d249bd40a6b1eef0d7aR/ALLDOCUBE-C27-27-Inch-Monitor-Smart-Computer-Monitors-1920-1080-Resolution-100-sRGB-250-nits-Type.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S7a61b45d9dcb4d5fb5b37df65eb7f87fs/ALLDOCUBE-GT-27-27-inch-165Hz-Gaming-PC-Monitor-2K-1440P-Resolution-Computer-LCD-with-HDR.jpg_220x220.jpg"
+      ],
+      "accessories": [
+        "https://ae01.alicdn.com/kf/S343a3c1fa7c14f04a2a88bbce1f0a87eC/Waterproof-Shockproof-Laptop-Bag-Case-For-Dell-Hp-Huawei-Xiaomi-14-15-15-6-inch-Computer.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S7fdf02885dde45bca7cd5918af16a3c7g/Gaming-Mouse-Pad-Computer-Mousepad-Large-Mouse-Pad-Gamer-XXL-Mouse-Carpet-PC-Desk-Mat-keyboard.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/Sc39cb6b5e8a74a898bcfdaed1bbd5bc6I/GKK-Transparent-Original-Liquid-Silicone-Case-For-iPhone-15-Plus-Case-13-11-12-14-Pro.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S6599e2b5cb6e4bd596d3d9ca4fef1804j/For-iPhone-15-14-13-12-11-Pro-Max-Plus-Case-Camera-Lens-Protection-Cover-Luxury.jpg_220x220.jpg"
+      ],
+      "smart-home": [
+        "https://ae01.alicdn.com/kf/S09909fa0ca934066a38c55a9195638f1R/Smart-Home-PIR-Motion-Sensor-Wireless-Infrared-Detector-Security-Burglar-Alarm-Sensor-Tuya-APP-Control-Compatible.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S20e8f5bf07934ccc95f73bc9057f9c59e/Smart-Wifi-Light-Switch-Glass-Panel-Wireless-Wall-Touch-Switch-Voice-Control-Home-Automation-Work-with.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S69dca97f4cde45c3914fc7acdf12af0bA/SONOFF-MINIR4M-Smart-Switch-WIFI-Mini-Two-Way-DIY-Switch-Smart-Home-Automation-Modules-Work-with.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S8ad6bab18cb941e9b8c8c5c0e7abaaa1H/ESP32-H2-RGB-Light-Zigbee-Smart-Gateway-Hub-Home-Assistant-with-Bluetooth-Battery-Color-LED-Matter.jpg_220x220.jpg"
+      ],
+      "wearables": [
+        "https://ae01.alicdn.com/kf/Se45ca7ae42724b7b9d4e47c3c7fc11e04/Smart-Watch-Men-Women-IP68-Waterproof-Full-Touch-Fitness-Tracker-Heart-Rate-Sleep-Monitor-Smartwatch-Sport.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S2e7a5bbb49bc43618b7d30e5a4ab5ed68/SOYES-F950-Smart-Watch-Men-Bluetooth-Call-AMOLED-Screen-Wireless-Charging-Sport-Watch-Woman-Men-Smartwatch.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S2cd8f2f72747445ebabea1fb3b8c1fc0H/Smart-Watch-for-Men-with-Bluetooth-Call-Full-Touch-Fitness-Tracker-IP68-Waterproof-Blood-Pressure-Oxygen.jpg_220x220.jpg",
+        "https://ae01.alicdn.com/kf/S6878fb39be3f492cb0c6b7b6a94c79b8n/Smart-Watch-Men-With-Bluetooth-Call-Blood-Pressure-Monitoring-Heart-Rate-Health-Tracker-Sport-Waterproof-Smartwatch.jpg_220x220.jpg"
       ]
     };
     
     // Get images for the product's category or use general electronics images
     const categoryImages = categoryImageMap[product.category] || [
-      "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg",
-      "https://s.alicdn.com/@sc04/kf/H8a1b95ada147487180a3dafedf45c8acs.jpg_300x300.jpg",
-      "https://s.alicdn.com/@sc04/kf/H51af5abbc3de41c2ad37fecd1f7b3b83y.jpg_300x300.jpg"
+      "https://ae01.alicdn.com/kf/Sc39cb6b5e8a74a898bcfdaed1bbd5bc6I/GKK-Transparent-Original-Liquid-Silicone-Case-For-iPhone-15-Plus-Case-13-11-12-14-Pro.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/S08f4794a5ae24142937492187ca71b92Q/LED-Desk-Lamp-Table-Lamp-Adjustable-3-Lighting-Modes-Light-Reading-Light-With-Rechargeable-Battery-Reading.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/Sf2f0e052f4ce495786d1fe6a24d9b848L/Picun-H12-Headsets-Bluetooth-Wireless-Headphones-Gaming-Bass-Noise-Reduction-Foldable-Wireless-Wired-Headset-with-Microphone.jpg_220x220.jpg"
     ];
     
     // Use name-based hashing to consistently pick the same image for the same product

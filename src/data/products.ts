@@ -7,11 +7,11 @@ export const expandedProducts: Product[] = [
     name: "iPhone 13 Pro Max",
     price: 1099,
     oldPrice: 1299,
-    image: "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aXBob25lJTIwMTMlMjBwcm98ZW58MHx8MHx8fDA%3D",
+    image: "https://ae01.alicdn.com/kf/S0fecb147b4074048a2af4619ffbbcdcdX/IPhone-15-Pro-Max-Phone-Global-Version-A17-Pro-Chip-48MP-Camera-6-7-Super-Retina.jpg_220x220.jpg",
     images: [
-      "https://images.unsplash.com/photo-1632661674596-df8be070a5c5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aXBob25lJTIwMTMlMjBwcm98ZW58MHx8MHx8fDA%3D",
-      "https://images.unsplash.com/photo-1607936854279-55e8a4c64888?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aXBob25lJTIwMTN8ZW58MHx8MHx8fDA%3D",
-      "https://images.unsplash.com/photo-1591337676887-a217a6970a8a?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGlwaG9uZXxlbnwwfHwwfHx8MA%3D%3D"
+      "https://ae01.alicdn.com/kf/S0fecb147b4074048a2af4619ffbbcdcdX/IPhone-15-Pro-Max-Phone-Global-Version-A17-Pro-Chip-48MP-Camera-6-7-Super-Retina.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/S552726afd580451fa58bde9bb4bad3d84/Global-Version-Xiaomi-Redmi-Note-13-Pro-5G-Smartphone-120Hz-AMOLED-200MP-Camera-67W-Fast-Charging.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/Sc39cb6b5e8a74a898bcfdaed1bbd5bc6I/GKK-Transparent-Original-Liquid-Silicone-Case-For-iPhone-15-Plus-Case-13-11-12-14-Pro.jpg_220x220.jpg"
     ],
     rating: 4.9,
     reviewCount: 245,
@@ -34,11 +34,11 @@ export const expandedProducts: Product[] = [
     name: "Samsung Galaxy S22 Ultra",
     price: 1199,
     oldPrice: 1299,
-    image: "https://images.unsplash.com/photo-1644501625713-92a2908df9d9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2FsYXh5JTIwczIyfGVufDB8fDB8fHww",
+    image: "https://ae01.alicdn.com/kf/S77c842e761a544e7b9f607fa4a04d7daB/Samsung-Galaxy-S23-Ultra-5G-Smart-Phone-12GB-256GB-Snapdragon-8-Gen-2-6-8-Inch.jpg_220x220.jpg",
     images: [
-      "https://images.unsplash.com/photo-1644501625713-92a2908df9d9?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2FsYXh5JTIwczIyfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1659030524412-e9b1d258fea3?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8Z2FsYXh5JTIwczIyfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1643133277733-66a476f7f20e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHNhbXN1bmclMjBwaG9uZXxlbnwwfHwwfHx8MA%3D%3D"
+      "https://ae01.alicdn.com/kf/S77c842e761a544e7b9f607fa4a04d7daB/Samsung-Galaxy-S23-Ultra-5G-Smart-Phone-12GB-256GB-Snapdragon-8-Gen-2-6-8-Inch.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/Se00e3db2c5ca476e8c27e2b949d8ede19/Samsung-Galaxy-S23-Ultra-5G-Smart-Phone-12GB-256GB-Snapdragon-8-Gen-2-6-8-Inch.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/Sb32f44df1dc84c60986f2b9231edd1f62/Samsung-Galaxy-S23-Ultra-5G-Smart-Phone-12GB-256GB-Snapdragon-8-Gen-2-6-8-Inch.jpg_220x220.jpg"
     ],
     rating: 4.8,
     reviewCount: 189,
@@ -61,11 +61,11 @@ export const expandedProducts: Product[] = [
     name: "Google Pixel 7 Pro",
     price: 899,
     oldPrice: 999,
-    image: "https://images.unsplash.com/photo-1666202452280-3b50723538e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww",
+    image: "https://ae01.alicdn.com/kf/S7ec7dfb9f98d40c0a6a555db3ef63e7cJ/Original-Google-Pixel-7-Pro-5G-Mobile-Phone-6-7-120Hz-LTPO-OLED-Display-Tensor-G2.jpg_220x220.jpg",
     images: [
-      "https://images.unsplash.com/photo-1666202452280-3b50723538e4?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1635870664257-430f094c25e6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww",
-      "https://images.unsplash.com/photo-1596742578443-7682ef5251cd?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGdvb2dsZSUyMHBpeGVsfGVufDB8fDB8fHww"
+      "https://ae01.alicdn.com/kf/S7ec7dfb9f98d40c0a6a555db3ef63e7cJ/Original-Google-Pixel-7-Pro-5G-Mobile-Phone-6-7-120Hz-LTPO-OLED-Display-Tensor-G2.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/S1b29efb4222f41c6a31ff35f4a52fe21w/Original-Google-Pixel-7-Pro-5G-Mobile-Phone-6-7-120Hz-LTPO-OLED-Display-Tensor-G2.jpg_220x220.jpg",
+      "https://ae01.alicdn.com/kf/Sc5eea29ec935428a8f2ba89dd3d8ef70X/Original-Google-Pixel-7-Pro-5G-Mobile-Phone-6-7-120Hz-LTPO-OLED-Display-Tensor-G2.jpg_220x220.jpg"
     ],
     rating: 4.7,
     reviewCount: 156,
