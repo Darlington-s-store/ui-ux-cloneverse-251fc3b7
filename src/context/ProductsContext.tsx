@@ -363,13 +363,16 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
   
   const getProductImage = (product: Product): string => {
-    // If product has specific images, use them
+    // If product has specific images, use them and check if they're valid
     if (product.images && product.images.length > 0) {
-      return product.images[0];
+      const validImage = product.images.find(img => 
+        img && !img.includes('undefined') && !img.includes('null')
+      );
+      if (validImage) return validImage;
     }
     
     // Otherwise, if it has a valid image, use that
-    if (product.image && !product.image.includes('undefined')) {
+    if (product.image && !product.image.includes('undefined') && !product.image.includes('null')) {
       return product.image;
     }
     

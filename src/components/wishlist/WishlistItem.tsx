@@ -1,6 +1,7 @@
 
 import { Trash } from 'lucide-react';
 import { toast } from 'sonner';
+import { useState } from 'react';
 
 interface WishlistItemProps {
   id: string;
@@ -23,6 +24,8 @@ const WishlistItem: React.FC<WishlistItemProps> = ({
   onRemove,
   onAddToCart
 }) => {
+  const [imgError, setImgError] = useState(false);
+  
   const handleRemove = () => {
     onRemove(id);
     toast.success(`${name} removed from wishlist`);
@@ -32,6 +35,13 @@ const WishlistItem: React.FC<WishlistItemProps> = ({
     onAddToCart(id);
     toast.success(`${name} added to cart`);
   };
+  
+  const handleImageError = () => {
+    setImgError(true);
+  };
+  
+  // Fallback image if the original one fails to load
+  const fallbackImage = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
   
   return (
     <div className="group bg-white rounded-lg p-4 border border-gray-200 relative">
@@ -50,9 +60,10 @@ const WishlistItem: React.FC<WishlistItemProps> = ({
       
       <div className="flex justify-center h-40 mb-4">
         <img
-          src={image}
+          src={imgError ? fallbackImage : image}
           alt={name}
           className="h-full object-contain"
+          onError={handleImageError}
         />
       </div>
       

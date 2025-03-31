@@ -29,6 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   isNew,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const { addToCart, addToWishlist, getProductById } = useProducts();
   
   const handleAddToCart = (e: React.MouseEvent) => {
@@ -58,6 +59,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
     e.stopPropagation();
     // Quick view logic could be implemented here
   };
+
+  const handleImageError = () => {
+    setImgError(true);
+  };
+  
+  // Fallback image if the original one fails to load
+  const fallbackImage = "https://s.alicdn.com/@sc04/kf/H40a7f4a3dc6f41aea2d0b0cdd1eecc0aM.jpg_300x300.jpg";
   
   return (
     <div 
@@ -74,9 +82,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             <span className="bg-green-500 text-white text-xs px-2 py-1 rounded absolute top-2 left-2">NEW</span>
           )}
           <img 
-            src={image} 
+            src={imgError ? fallbackImage : image} 
             alt={name} 
             className="w-full h-full object-contain p-4 transition-transform duration-300 group-hover:scale-105"
+            onError={handleImageError}
           />
           
           <div className={`absolute top-2 right-2 flex flex-col gap-2 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
