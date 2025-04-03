@@ -38,37 +38,9 @@ export const useAccount = () => {
     }
   };
 
-  const getUserOrders = async () => {
-    if (!user) {
-      toast.error('You must be logged in to view orders');
-      return [];
-    }
-
-    try {
-      setIsLoading(true);
-      
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-        
-      if (error) throw error;
-      
-      return data || [];
-    } catch (error: any) {
-      console.error('Error fetching orders:', error);
-      toast.error(error.message || 'Failed to load orders');
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return {
     profile,
     isLoading,
-    updateUserProfile,
-    getUserOrders
+    updateUserProfile
   };
 };

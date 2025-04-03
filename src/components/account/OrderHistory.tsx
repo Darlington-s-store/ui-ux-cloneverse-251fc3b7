@@ -2,11 +2,15 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders } from '@/hooks/useOrders';
-import { formatDate } from '@/lib/utils';
+import { formatDate, formatPrice, getOrderStatusColor, getPaymentStatusColor } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { AlertCircle, ShoppingBag, TruckIcon, CheckCircle, XCircle } from 'lucide-react';
 
 const OrderHistory = () => {
-  const { isLoading, fetchUserOrders } = useOrders();
+  const { isLoading, fetchUserOrders, cancelOrder } = useOrders();
   const [orders, setOrders] = useState<any[]>([]);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   
   useEffect(() => {
     loadOrders();
@@ -15,6 +19,32 @@ const OrderHistory = () => {
   const loadOrders = async () => {
     const data = await fetchUserOrders();
     setOrders(data || []);
+  };
+  
+  const handleCancelOrder = async (orderId: string) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      setCancellingOrderId(orderId);
+      const success = await cancelOrder(orderId);
+      if (success) {
+        loadOrders();
+      }
+      setCancellingOrderId(null);
+    }
+  };
+  
+  const getOrderStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'delivered':
+        return <CheckCircle className="w-4 h-4 text-green-600" />;
+      case 'shipped':
+        return <TruckIcon className="w-4 h-4 text-blue-600" />;
+      case 'processing':
+        return <ShoppingBag className="w-4 h-4 text-yellow-600" />;
+      case 'cancelled':
+        return <XCircle className="w-4 h-4 text-red-600" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-gray-600" />;
+    }
   };
   
   if (isLoading) {
@@ -47,21 +77,14 @@ const OrderHistory = () => {
               </div>
               
               <div className="space-x-2">
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  order.status === 'delivered' 
-                    ? 'bg-green-100 text-green-800' 
-                    : order.status === 'shipped' 
-                    ? 'bg-blue-100 text-blue-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getOrderStatusColor(order.status)}`}>
+                  {getOrderStatusIcon(order.status)}
+                  <span className="ml-1">
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  </span>
                 </span>
                 
-                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  order.payment_status === 'paid' 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPaymentStatusColor(order.payment_status)}`}>
                   {order.payment_status.charAt(0).toUpperCase() + order.payment_status.slice(1)}
                 </span>
               </div>
@@ -71,7 +94,7 @@ const OrderHistory = () => {
               <div className="flex justify-between mb-4">
                 <div>
                   <div className="font-medium">Total Amount</div>
-                  <div className="text-2xl font-bold">${parseFloat(order.total).toFixed(2)}</div>
+                  <div className="text-2xl font-bold">{formatPrice(order.total)}</div>
                 </div>
                 
                 <div className="text-right">
@@ -80,12 +103,25 @@ const OrderHistory = () => {
                 </div>
               </div>
               
-              <Link 
-                to={`/order-success/${order.id}`} 
-                className="btn-primary w-full text-center"
-              >
-                View Order Details
-              </Link>
+              <div className="flex flex-col md:flex-row gap-2">
+                <Link 
+                  to={`/order-success/${order.id}`} 
+                  className="btn-primary w-full text-center"
+                >
+                  View Order Details
+                </Link>
+                
+                {order.status === 'processing' && (
+                  <Button 
+                    variant="outline"
+                    onClick={() => handleCancelOrder(order.id)}
+                    disabled={cancellingOrderId === order.id}
+                    className="w-full"
+                  >
+                    {cancellingOrderId === order.id ? 'Cancelling...' : 'Cancel Order'}
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         ))}

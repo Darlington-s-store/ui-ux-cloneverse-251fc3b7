@@ -7,6 +7,7 @@ import AccountSidebar from '../components/account/AccountSidebar';
 import ProfileForm from '../components/account/ProfileForm';
 import OrderHistory from '../components/account/OrderHistory';
 import { useAuth } from '../context/AuthContext';
+import { Loader2 } from 'lucide-react';
 
 const Account = () => {
   const { user, profile, isLoading } = useAuth();
@@ -22,7 +23,8 @@ const Account = () => {
     return (
       <Layout>
         <div className="container-custom py-12 text-center">
-          Loading...
+          <Loader2 className="h-8 w-8 animate-spin mx-auto" />
+          <p className="mt-2">Loading your account...</p>
         </div>
       </Layout>
     );
