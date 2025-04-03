@@ -5,6 +5,7 @@ import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import AccountSidebar from '../components/account/AccountSidebar';
 import ProfileForm from '../components/account/ProfileForm';
+import OrderHistory from '../components/account/OrderHistory';
 import { useAuth } from '../context/AuthContext';
 
 const Account = () => {
@@ -54,7 +55,8 @@ const Account = () => {
             <Routes>
               <Route path="/" element={<ProfileForm />} />
               <Route path="/profile" element={<ProfileForm />} />
-              {/* Add more routes for Orders, Addresses, etc. */}
+              <Route path="/orders" element={<OrderHistory />} />
+              {/* Add more routes for Addresses, etc. */}
             </Routes>
           </div>
         </div>

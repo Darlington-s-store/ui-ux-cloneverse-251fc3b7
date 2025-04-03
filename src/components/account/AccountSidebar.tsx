@@ -1,65 +1,81 @@
 
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink } from 'react-router-dom';
+import { User, ShoppingBag, Heart, MapPin, CreditCard, LogOut } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
-interface MenuItem {
-  label: string;
-  path: string;
-}
-
-interface MenuGroup {
-  title: string;
-  items: MenuItem[];
-}
-
-const menuGroups: MenuGroup[] = [
-  {
-    title: 'Manage My Account',
-    items: [
-      { label: 'My Profile', path: '/account/profile' },
-      { label: 'Address Book', path: '/account/address' },
-      { label: 'My Payment Options', path: '/account/payment' }
-    ]
-  },
-  {
-    title: 'My Orders',
-    items: [
-      { label: 'My Returns', path: '/account/returns' },
-      { label: 'My Cancellations', path: '/account/cancellations' }
-    ]
-  },
-  {
-    title: 'My Wishlist',
-    items: [
-      { label: 'View Wishlist', path: '/account/wishlist' }
-    ]
-  }
-];
-
-const AccountSidebar: React.FC = () => {
-  const location = useLocation();
+const AccountSidebar = () => {
+  const { signOut } = useAuth();
   
-  const isActive = (path: string) => location.pathname === path;
+  const handleSignOut = async () => {
+    await signOut();
+  };
   
   return (
-    <div className="pr-8">
-      {menuGroups.map((group, groupIndex) => (
-        <div key={groupIndex} className="mb-6">
-          <h3 className="font-semibold text-base mb-3">{group.title}</h3>
-          <ul className="space-y-3">
-            {group.items.map((item, itemIndex) => (
-              <li key={itemIndex}>
-                <Link
-                  to={item.path}
-                  className={`text-sm ${isActive(item.path) ? 'text-exclusive font-medium' : 'text-gray-600 hover:text-exclusive'}`}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+    <div className="bg-white shadow-sm rounded-lg border p-5">
+      <h2 className="text-lg font-semibold mb-4">My Account</h2>
+      
+      <ul className="space-y-2">
+        <li>
+          <NavLink 
+            to="/account/profile" 
+            className={({ isActive }) => `flex items-center py-2 px-3 rounded-md ${isActive ? 'bg-red-500 text-white' : 'hover:bg-gray-100'}`}
+          >
+            <User size={18} className="mr-3" />
+            <span>Profile</span>
+          </NavLink>
+        </li>
+        
+        <li>
+          <NavLink 
+            to="/account/orders" 
+            className={({ isActive }) => `flex items-center py-2 px-3 rounded-md ${isActive ? 'bg-red-500 text-white' : 'hover:bg-gray-100'}`}
+          >
+            <ShoppingBag size={18} className="mr-3" />
+            <span>Orders</span>
+          </NavLink>
+        </li>
+        
+        <li>
+          <NavLink 
+            to="/wishlist" 
+            className={({ isActive }) => `flex items-center py-2 px-3 rounded-md ${isActive ? 'bg-red-500 text-white' : 'hover:bg-gray-100'}`}
+          >
+            <Heart size={18} className="mr-3" />
+            <span>Wishlist</span>
+          </NavLink>
+        </li>
+        
+        <li>
+          <NavLink 
+            to="/account/addresses" 
+            className={({ isActive }) => `flex items-center py-2 px-3 rounded-md ${isActive ? 'bg-red-500 text-white' : 'hover:bg-gray-100'}`}
+          >
+            <MapPin size={18} className="mr-3" />
+            <span>Addresses</span>
+          </NavLink>
+        </li>
+        
+        <li>
+          <NavLink 
+            to="/account/payment-methods" 
+            className={({ isActive }) => `flex items-center py-2 px-3 rounded-md ${isActive ? 'bg-red-500 text-white' : 'hover:bg-gray-100'}`}
+          >
+            <CreditCard size={18} className="mr-3" />
+            <span>Payment Methods</span>
+          </NavLink>
+        </li>
+        
+        <li className="border-t my-2 pt-2">
+          <button 
+            onClick={handleSignOut}
+            className="flex items-center py-2 px-3 rounded-md text-red-500 hover:bg-red-50 w-full text-left"
+          >
+            <LogOut size={18} className="mr-3" />
+            <span>Logout</span>
+          </button>
+        </li>
+      </ul>
     </div>
   );
 };

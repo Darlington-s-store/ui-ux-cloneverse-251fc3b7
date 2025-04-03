@@ -4,28 +4,84 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/layout/Layout';
 import Breadcrumb from '../components/layout/Breadcrumb';
 import CheckoutForm from '../components/checkout/CheckoutForm';
-import { useProducts } from '../context/ProductsContext';
 import { useAuth } from '../context/AuthContext';
-import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useOrders } from '@/hooks/useOrders';
 
 const Checkout = () => {
-  const { cartItems, getCartTotal, clearCart } = useProducts();
   const { user, profile, isLoading } = useAuth();
   const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [isCartLoading, setIsCartLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
+  const { placeOrder } = useOrders();
   
   useEffect(() => {
     if (!isLoading && !user) {
       toast.error('Please login to checkout');
       navigate('/login');
+    } else if (user) {
+      fetchCart();
     }
   }, [user, isLoading, navigate]);
+  
+  const fetchCart = async () => {
+    try {
+      setIsCartLoading(true);
+      
+      const { data, error } = await supabase
+        .from('cart_items')
+        .select(`
+          id,
+          quantity,
+          selected_color,
+          selected_size,
+          products (
+            id,
+            name,
+            price,
+            image
+          )
+        `)
+        .eq('user_id', user?.id);
+        
+      if (error) throw error;
+      
+      setCartItems(data || []);
+    } catch (error: any) {
+      console.error('Error fetching cart:', error);
+      toast.error(error.message || 'Failed to load cart');
+    } finally {
+      setIsCartLoading(false);
+    }
+  };
+  
+  const clearCart = async () => {
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', user?.id);
+        
+      if (error) throw error;
+      
+      setCartItems([]);
+    } catch (error: any) {
+      console.error('Error clearing cart:', error);
+      toast.error(error.message || 'Failed to clear cart');
+    }
+  };
   
   const handlePlaceOrder = async (formData: any, paymentMethod: string) => {
     if (!user) {
       toast.error('Please login to checkout');
       navigate('/login');
+      return;
+    }
+    
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty');
       return;
     }
     
@@ -37,49 +93,30 @@ const Checkout = () => {
       
       setTimeout(async () => {
         try {
-          // Generate order number
-          const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-          
-          // Place the order in Supabase
-          const { data: order, error } = await supabase
-            .from('orders')
-            .insert({
-              user_id: user.id,
-              order_number: orderNumber,
-              status: 'processing',
-              total: getCartTotal(),
-              payment_method: paymentMethod,
-              payment_status: paymentMethod === 'credit' || paymentMethod === 'paypal' ? 'paid' : 'pending',
-              shipping_address: formData
-            })
-            .select()
-            .single();
-            
-          if (error) throw error;
-          
-          if (!order) throw new Error('Failed to create order');
-          
-          // Insert order items
+          // Prepare order items for the order
           const orderItems = cartItems.map(item => ({
-            order_id: order.id,
-            product_id: item.product.id,
+            product_id: item.products.id,
             quantity: item.quantity,
-            price: item.selectedSize?.price || item.product.price,
-            selected_size: item.selectedSize?.name,
-            selected_color: item.selectedColor
+            price: item.products.price,
+            selected_size: item.selected_size,
+            selected_color: item.selected_color
           }));
           
-          const { error: orderItemsError } = await supabase
-            .from('order_items')
-            .insert(orderItems);
-            
-          if (orderItemsError) throw orderItemsError;
+          // Place the order
+          const order = await placeOrder(
+            orderItems,
+            formData,
+            getCartTotal(),
+            paymentMethod,
+            paymentMethod === 'credit' || paymentMethod === 'paypal' ? 'paid' : 'pending'
+          );
+          
+          if (!order) {
+            throw new Error('Failed to create order');
+          }
           
           // Clear cart
-          clearCart();
-          
-          // Show success message
-          toast.success('Order placed successfully!');
+          await clearCart();
           
           // Redirect to success page
           navigate(`/order-success/${order.id}`);
@@ -98,19 +135,25 @@ const Checkout = () => {
     }
   };
   
+  const getCartTotal = () => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.products.price * item.quantity);
+    }, 0);
+  };
+  
   const cartSubtotal = getCartTotal();
   const shipping = 0; // Free shipping
   const cartTotal = cartSubtotal + shipping;
   
   // Convert cart items to the expected format for CheckoutForm
   const mappedCartItems = cartItems.map(item => ({
-    id: item.product.id,
-    name: item.product.name,
-    price: item.product.price,
+    id: item.products.id,
+    name: item.products.name,
+    price: item.products.price,
     quantity: item.quantity,
-    image: item.product.image,
-    color: item.selectedColor,
-    size: item.selectedSize?.name
+    image: item.products.image,
+    color: item.selected_color,
+    size: item.selected_size
   }));
   
   // Pre-populate form with user profile data if available
@@ -126,7 +169,7 @@ const Checkout = () => {
     country: profile.country || 'United States'
   } : undefined;
   
-  if (isLoading) {
+  if (isLoading || isCartLoading) {
     return (
       <Layout>
         <div className="container-custom py-12 text-center">
@@ -138,6 +181,23 @@ const Checkout = () => {
   
   if (!user) {
     return null; // Will redirect in useEffect
+  }
+  
+  if (cartItems.length === 0 && !isCartLoading) {
+    return (
+      <Layout>
+        <div className="container-custom py-12 text-center">
+          <h1 className="text-2xl font-bold mb-4">Your cart is empty</h1>
+          <p className="mb-6">Add some items to your cart before checking out.</p>
+          <button 
+            onClick={() => navigate('/shop')}
+            className="btn-primary"
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </Layout>
+    );
   }
   
   return (
