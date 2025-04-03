@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { Json } from '@/integrations/supabase/types';
 
 export interface OrderItem {
   product_id: string;
@@ -95,6 +96,19 @@ export const useOrders = () => {
       // Generate order number
       const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       
+      // Convert ShippingAddress to a JSON object that matches the Json type
+      const shippingAddressJson: Record<string, Json> = {
+        firstName: shippingAddress.firstName,
+        lastName: shippingAddress.lastName,
+        email: shippingAddress.email,
+        phoneNumber: shippingAddress.phoneNumber || null,
+        streetAddress: shippingAddress.streetAddress,
+        city: shippingAddress.city,
+        state: shippingAddress.state,
+        zipCode: shippingAddress.zipCode,
+        country: shippingAddress.country
+      };
+      
       // Create the order
       const { data: order, error } = await supabase
         .from('orders')
@@ -105,7 +119,7 @@ export const useOrders = () => {
           total,
           payment_method: paymentMethod,
           payment_status: paymentStatus,
-          shipping_address: shippingAddress
+          shipping_address: shippingAddressJson
         })
         .select()
         .single();
