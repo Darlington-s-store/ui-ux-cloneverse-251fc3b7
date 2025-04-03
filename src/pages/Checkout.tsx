@@ -57,6 +57,8 @@ const Checkout = () => {
             
           if (error) throw error;
           
+          if (!order) throw new Error('Failed to create order');
+          
           // Insert order items
           const orderItems = cartItems.map(item => ({
             order_id: order.id,
