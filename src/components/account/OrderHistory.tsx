@@ -1,10 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useOrders } from '@/hooks/useOrders';
 import { formatDate, formatPrice, getOrderStatusColor, getPaymentStatusColor } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import { AlertCircle, ShoppingBag, TruckIcon, CheckCircle, XCircle } from 'lucide-react';
 
 const OrderHistory = () => {

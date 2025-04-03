@@ -73,8 +73,14 @@ export const useOrders = () => {
         
       if (error) throw error;
       
-      setOrders(data || []);
-      return data;
+      // Transform the data to match our Order interface
+      const transformedOrders: Order[] = (data || []).map(order => ({
+        ...order,
+        shipping_address: order.shipping_address as Record<string, any>
+      }));
+      
+      setOrders(transformedOrders);
+      return transformedOrders;
     } catch (error: any) {
       console.error('Error fetching orders:', error);
       toast.error(error.message || 'Failed to load orders');
@@ -118,10 +124,22 @@ export const useOrders = () => {
         
       if (itemsError) throw itemsError;
       
+      // Transform the items to match our interface
+      const transformedItems = (orderItems || []).map(item => ({
+        id: item.id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        selected_size: item.selected_size,
+        selected_color: item.selected_color,
+        product: item.products // Rename products to product
+      }));
+      
       // Create the full order object with items
       const orderWithItems: OrderWithItems = {
         ...order,
-        items: orderItems || []
+        shipping_address: order.shipping_address as Record<string, any>,
+        items: transformedItems
       };
       
       setCurrentOrder(orderWithItems);
@@ -147,7 +165,16 @@ export const useOrders = () => {
         
       if (error) throw error;
       
-      return data;
+      // Transform to match our expected format
+      return (data || []).map(item => ({
+        id: item.id,
+        product_id: item.product_id,
+        quantity: item.quantity,
+        price: item.price,
+        selected_size: item.selected_size,
+        selected_color: item.selected_color,
+        product: item.products // Rename products to product
+      }));
     } catch (error: any) {
       console.error('Error fetching order items:', error);
       toast.error(error.message || 'Failed to load order items');
@@ -273,7 +300,10 @@ export const useOrders = () => {
       if (orderItemsError) throw orderItemsError;
       
       toast.success('Order placed successfully!');
-      return order;
+      return {
+        ...order,
+        shipping_address: order.shipping_address as Record<string, any>
+      };
     } catch (error: any) {
       console.error('Error placing order:', error);
       toast.error(error.message || 'Failed to place order');
