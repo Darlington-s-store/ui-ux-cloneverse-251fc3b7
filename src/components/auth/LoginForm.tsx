@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginForm: React.FC = () => {
   const [credentials, setCredentials] = useState({
@@ -10,7 +11,9 @@ const LoginForm: React.FC = () => {
     rememberMe: false
   });
   
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn } = useAuth();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -20,7 +23,7 @@ const LoginForm: React.FC = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Simple validation
@@ -29,9 +32,17 @@ const LoginForm: React.FC = () => {
       return;
     }
     
-    // Mock login
-    toast.success('Login successful!');
-    navigate('/account');
+    setIsLoading(true);
+    
+    try {
+      await signIn(credentials.email, credentials.password);
+      navigate('/account');
+    } catch (error) {
+      // Error is handled in the auth context
+      console.error('Login error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -42,9 +53,9 @@ const LoginForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <input
-            type="text"
+            type="email"
             name="email"
-            placeholder="Email or Phone Number"
+            placeholder="Email"
             className="input-primary"
             value={credentials.email}
             onChange={handleChange}
@@ -84,19 +95,27 @@ const LoginForm: React.FC = () => {
           </Link>
         </div>
         
-        <button type="submit" className="btn-primary w-full">
-          Log In
+        <button 
+          type="submit" 
+          className="btn-primary w-full"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Logging in...' : 'Log In'}
         </button>
         
-        <button type="button" className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+        <button 
+          type="button" 
+          className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+          disabled={isLoading}
+        >
           <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-          <span>Sign up with Google</span>
+          <span>Sign in with Google</span>
         </button>
         
         <div className="text-center">
-          <span className="text-gray-600">Already have account?</span>
+          <span className="text-gray-600">Don't have an account?</span>
           <Link to="/signup" className="text-exclusive ml-1 hover:underline">
-            Log in
+            Sign up
           </Link>
         </div>
       </form>

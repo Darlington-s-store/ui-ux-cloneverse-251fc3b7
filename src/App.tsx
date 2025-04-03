@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ProductsProvider } from './context/ProductsContext';
+import { AuthProvider } from './context/AuthContext';
 
 // Pages
 import Index from './pages/Index';
@@ -28,29 +29,31 @@ import './App.css';
 function App() {
   return (
     <>
-      <ProductsProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:id" element={<Product />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-            <Route path="/categories" element={<Categories />} />
-            <Route path="/category/:categoryId" element={<CategoryPage />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/account/*" element={<Account />} />
-            <Route path="/wishlist" element={<Wishlist />} />
-            <Route path="/admin/*" element={<Admin />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-        <Toaster position="top-right" />
-      </ProductsProvider>
+      <AuthProvider>
+        <ProductsProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<Product />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+              <Route path="/categories" element={<Categories />} />
+              <Route path="/category/:categoryId" element={<CategoryPage />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/account/*" element={<Account />} />
+              <Route path="/wishlist" element={<Wishlist />} />
+              <Route path="/admin/*" element={<Admin />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+          <Toaster position="top-right" />
+        </ProductsProvider>
+      </AuthProvider>
     </>
   );
 }

@@ -1,4 +1,5 @@
 
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, AlertCircle } from 'lucide-react';
 import Layout from '../components/layout/Layout';
@@ -6,31 +7,148 @@ import Breadcrumb from '../components/layout/Breadcrumb';
 import CartItem from '../components/cart/CartItem';
 import CartSummary from '../components/cart/CartSummary';
 import { useProducts } from '../context/ProductsContext';
+import { useAuth } from '../context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateCartQuantity, getCartTotal } = useProducts();
+  const { user, isLoading: authLoading } = useAuth();
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [isCartLoading, setIsCartLoading] = useState(true);
   const navigate = useNavigate();
   
-  const handleRemoveItem = (productId: string) => {
-    const item = cartItems.find(item => item.product.id === productId);
-    if (item) {
-      removeFromCart(productId);
-      toast.success(`${item.product.name} removed from cart`);
+  useEffect(() => {
+    if (user) {
+      fetchCart();
+    } else if (!authLoading && !user) {
+      // Check from localStorage if not logged in
+      // This is a fallback for guest users
+      const savedCart = localStorage.getItem('cartItems');
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+      setIsCartLoading(false);
+    }
+  }, [user, authLoading]);
+  
+  const fetchCart = async () => {
+    try {
+      setIsCartLoading(true);
+      
+      // Fetch cart items with product details
+      const { data, error } = await supabase
+        .from('cart_items')
+        .select(`
+          id,
+          quantity,
+          selected_color,
+          selected_size,
+          products (
+            id,
+            name,
+            price,
+            image
+          )
+        `)
+        .eq('user_id', user?.id);
+        
+      if (error) throw error;
+      
+      setCartItems(data || []);
+    } catch (error: any) {
+      console.error('Error fetching cart:', error);
+      toast.error(error.message || 'Failed to load cart');
+    } finally {
+      setIsCartLoading(false);
     }
   };
   
-  const handleUpdateQuantity = (productId: string, quantity: number) => {
-    updateCartQuantity(productId, quantity);
+  const handleRemoveItem = async (productId: string) => {
+    try {
+      const item = cartItems.find(item => item.products.id === productId);
+      if (!item) return;
+      
+      if (user) {
+        // Remove from database if logged in
+        const { error } = await supabase
+          .from('cart_items')
+          .delete()
+          .eq('id', item.id);
+          
+        if (error) throw error;
+      } else {
+        // Remove from localStorage if not logged in
+        const updatedCart = cartItems.filter(i => i.products.id !== productId);
+        localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+      }
+      
+      setCartItems(prev => prev.filter(i => i.products.id !== productId));
+      toast.success(`${item.products.name} removed from cart`);
+    } catch (error: any) {
+      console.error('Error removing from cart:', error);
+      toast.error(error.message || 'Failed to remove from cart');
+    }
+  };
+  
+  const handleUpdateQuantity = async (productId: string, quantity: number) => {
+    try {
+      const itemIndex = cartItems.findIndex(item => item.products.id === productId);
+      if (itemIndex === -1) return;
+      
+      if (user) {
+        // Update in database if logged in
+        const { error } = await supabase
+          .from('cart_items')
+          .update({ quantity })
+          .eq('id', cartItems[itemIndex].id);
+          
+        if (error) throw error;
+      }
+      
+      // Update local state
+      const updatedCartItems = [...cartItems];
+      updatedCartItems[itemIndex].quantity = quantity;
+      setCartItems(updatedCartItems);
+      
+      // Update localStorage if not logged in
+      if (!user) {
+        localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+      }
+    } catch (error: any) {
+      console.error('Error updating cart quantity:', error);
+      toast.error(error.message || 'Failed to update quantity');
+    }
   };
   
   const handleCheckout = () => {
-    navigate('/checkout');
+    if (!user) {
+      // Redirect to login if not logged in
+      toast.error('Please login to checkout');
+      navigate('/login');
+    } else {
+      navigate('/checkout');
+    }
+  };
+  
+  const getCartTotal = () => {
+    return cartItems.reduce((total, item) => {
+      return total + (item.products.price * item.quantity);
+    }, 0);
   };
   
   const cartSubtotal = getCartTotal();
   const shipping = 0; // Free shipping
   const cartTotal = cartSubtotal + shipping;
+  
+  if (authLoading || isCartLoading) {
+    return (
+      <Layout>
+        <div className="container-custom py-12 text-center">
+          Loading...
+        </div>
+      </Layout>
+    );
+  }
   
   return (
     <Layout>
@@ -64,16 +182,16 @@ const Cart = () => {
                 <div className="divide-y divide-gray-200">
                   {cartItems.map((item) => (
                     <CartItem
-                      key={item.product.id}
-                      id={item.product.id}
-                      name={item.product.name}
-                      price={item.product.price}
-                      image={item.product.image}
+                      key={item.products.id}
+                      id={item.products.id}
+                      name={item.products.name}
+                      price={item.products.price}
+                      image={item.products.image}
                       quantity={item.quantity}
                       onRemove={handleRemoveItem}
                       onUpdateQuantity={handleUpdateQuantity}
-                      color={item.selectedColor}
-                      size={item.selectedSize?.name}
+                      color={item.selected_color}
+                      size={item.selected_size}
                     />
                   ))}
                 </div>

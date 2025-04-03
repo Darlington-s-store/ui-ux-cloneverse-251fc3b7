@@ -1,191 +1,237 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
 import { toast } from 'sonner';
 
-interface UserProfile {
-  firstName: string;
-  lastName: string;
-  email: string;
-  address: string;
-  currentPassword: string;
-  newPassword: string;
-  confirmPassword: string;
-}
-
-const ProfileForm: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile>({
-    firstName: 'Md',
-    lastName: 'Rimel',
-    email: 'rimel1111@gmail.com',
-    address: 'Kingston, 5236, United State',
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
+const ProfileForm = () => {
+  const { user, profile, updateProfile } = useAuth();
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    zip_code: '',
+    country: ''
   });
+  
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        first_name: profile.first_name || '',
+        last_name: profile.last_name || '',
+        phone: profile.phone || '',
+        address: profile.address || '',
+        city: profile.city || '',
+        state: profile.state || '',
+        zip_code: profile.zip_code || '',
+        country: profile.country || ''
+      });
+    }
+  }, [profile]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
-  };
-  
-  const handleSave = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validate passwords if user is changing them
-    if (profile.newPassword || profile.confirmPassword || profile.currentPassword) {
-      if (!profile.currentPassword) {
-        toast.error('Please enter your current password');
-        return;
-      }
-      
-      if (profile.newPassword !== profile.confirmPassword) {
-        toast.error('New passwords do not match');
-        return;
-      }
-      
-      if (profile.newPassword.length < 6) {
-        toast.error('Password must be at least 6 characters long');
-        return;
-      }
-    }
-    
-    // Save profile logic would go here
-    toast.success('Profile updated successfully');
-    
-    // Clear password fields
-    setProfile(prev => ({
+    setFormData(prev => ({
       ...prev,
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
+      [name]: value
     }));
   };
   
-  const handleCancel = () => {
-    // Reset form
-    setProfile({
-      firstName: 'Md',
-      lastName: 'Rimel',
-      email: 'rimel1111@gmail.com',
-      address: 'Kingston, 5236, United State',
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    
+    try {
+      await updateProfile(formData);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Edit Your Profile</h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-semibold">My Profile</h2>
+        {!isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="bg-exclusive hover:bg-exclusive-dark text-white px-4 py-2 rounded transition-colors"
+          >
+            Edit Profile
+          </button>
+        )}
+      </div>
       
-      <form onSubmit={handleSave}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              First Name
+            </label>
             <input
               type="text"
-              name="firstName"
-              value={profile.firstName}
+              name="first_name"
+              value={formData.first_name}
               onChange={handleChange}
-              className="input-primary"
-              required
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+              disabled={!isEditing}
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Last Name
+            </label>
             <input
               type="text"
-              name="lastName"
-              value={profile.lastName}
+              name="last_name"
+              value={formData.last_name}
               onChange={handleChange}
-              className="input-primary"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={profile.email}
-              onChange={handleChange}
-              className="input-primary"
-              required
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={profile.address}
-              onChange={handleChange}
-              className="input-primary"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+              disabled={!isEditing}
             />
           </div>
         </div>
         
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold mb-4">Password Changes</h3>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Email
+          </label>
+          <input
+            type="email"
+            value={user?.email || ''}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-100"
+            disabled
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+            disabled={!isEditing}
+          />
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Address
+          </label>
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+            disabled={!isEditing}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              City
+            </label>
+            <input
+              type="text"
+              name="city"
+              value={formData.city}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+              disabled={!isEditing}
+            />
+          </div>
           
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-              <input
-                type="password"
-                name="currentPassword"
-                value={profile.currentPassword}
-                onChange={handleChange}
-                className="input-primary"
-                placeholder="Enter current password"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-              <input
-                type="password"
-                name="newPassword"
-                value={profile.newPassword}
-                onChange={handleChange}
-                className="input-primary"
-                placeholder="Enter new password"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={profile.confirmPassword}
-                onChange={handleChange}
-                className="input-primary"
-                placeholder="Confirm new password"
-              />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              State
+            </label>
+            <input
+              type="text"
+              name="state"
+              value={formData.state}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+              disabled={!isEditing}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              ZIP Code
+            </label>
+            <input
+              type="text"
+              name="zip_code"
+              value={formData.zip_code}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+              disabled={!isEditing}
+            />
           </div>
         </div>
         
-        <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={handleCancel}
-          >
-            Cancel
-          </button>
-          
-          <button
-            type="submit"
-            className="btn-primary"
-          >
-            Save Changes
-          </button>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Country
+          </label>
+          <input
+            type="text"
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-exclusive focus:border-transparent"
+            disabled={!isEditing}
+          />
         </div>
+        
+        {isEditing && (
+          <div className="flex space-x-4">
+            <button
+              type="submit"
+              className="bg-exclusive hover:bg-exclusive-dark text-white px-6 py-2 rounded transition-colors"
+              disabled={isLoading}
+            >
+              {isLoading ? 'Saving...' : 'Save Changes'}
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => {
+                setIsEditing(false);
+                if (profile) {
+                  setFormData({
+                    first_name: profile.first_name || '',
+                    last_name: profile.last_name || '',
+                    phone: profile.phone || '',
+                    address: profile.address || '',
+                    city: profile.city || '',
+                    state: profile.state || '',
+                    zip_code: profile.zip_code || '',
+                    country: profile.country || ''
+                  });
+                }
+              }}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded transition-colors"
+              disabled={isLoading}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </form>
     </div>
   );

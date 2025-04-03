@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import PaymentForm from './PaymentForm';
@@ -20,6 +19,17 @@ interface CheckoutFormProps {
   total: number;
   isProcessing: boolean;
   onPlaceOrder: (shippingInfo: any, paymentMethod: string) => void;
+  initialFormData?: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber: string;
+    streetAddress: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
 }
 
 const CheckoutForm: React.FC<CheckoutFormProps> = ({ 
@@ -28,7 +38,8 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   shipping, 
   total, 
   isProcessing,
-  onPlaceOrder 
+  onPlaceOrder,
+  initialFormData 
 }) => {
   const [formData, setFormData] = useState({
     firstName: '',
@@ -46,6 +57,23 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     paymentMethod: 'cash', // 'cash', 'credit', or 'paypal'
     couponCode: ''
   });
+  
+  useEffect(() => {
+    if (initialFormData) {
+      setFormData(prev => ({
+        ...prev,
+        firstName: initialFormData.firstName,
+        lastName: initialFormData.lastName,
+        email: initialFormData.email,
+        phoneNumber: initialFormData.phoneNumber,
+        streetAddress: initialFormData.streetAddress,
+        city: initialFormData.city,
+        state: initialFormData.state,
+        zipCode: initialFormData.zipCode,
+        country: initialFormData.country
+      }));
+    }
+  }, [initialFormData]);
   
   const [step, setStep] = useState(1); // 1: Shipping Info, 2: Payment, 3: Confirmation
   const [paymentProcessing, setPaymentProcessing] = useState(false);
