@@ -16,6 +16,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [isCartLoading, setIsCartLoading] = useState(true);
   const navigate = useNavigate();
+  const { getProductById } = useProducts();
   
   useEffect(() => {
     if (user) {
@@ -27,7 +28,12 @@ const Cart = () => {
       if (savedCart) {
         try {
           const parsedCart = JSON.parse(savedCart);
-          setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+          // Ensure we have valid cart items with product data
+          const validCartItems = Array.isArray(parsedCart) ? parsedCart.filter(item => {
+            return item && item.product && item.product.id && typeof item.product.price === 'number';
+          }) : [];
+          
+          setCartItems(validCartItems);
         } catch (error) {
           console.error("Error parsing cart from localStorage:", error);
           setCartItems([]);
@@ -49,6 +55,7 @@ const Cart = () => {
           quantity,
           selected_color,
           selected_size,
+          product_id,
           products (
             id,
             name,
@@ -60,9 +67,31 @@ const Cart = () => {
         
       if (error) throw error;
       
-      // Filter out any items with missing product data
-      const validCartItems = (data || []).filter(item => item.products && item.products.price);
-      setCartItems(validCartItems);
+      // Process cart items to ensure they have the structure expected by CartItem component
+      const processedCartItems = (data || []).map(item => {
+        // Make sure we have product information
+        if (!item.products || typeof item.products.price !== 'number') {
+          const product = getProductById(item.product_id);
+          if (!product) return null; // Skip if no product found
+          
+          return {
+            id: item.id,
+            products: {
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image
+            },
+            quantity: item.quantity,
+            selected_color: item.selected_color,
+            selected_size: item.selected_size
+          };
+        }
+        
+        return item;
+      }).filter(Boolean); // Remove any nulls
+      
+      setCartItems(processedCartItems);
     } catch (error: any) {
       console.error('Error fetching cart:', error);
       toast.error(error.message || 'Failed to load cart');
@@ -145,6 +174,9 @@ const Cart = () => {
       // Check if product and price exist before adding to total
       if (item && item.products && typeof item.products.price === 'number' && typeof item.quantity === 'number') {
         return total + (item.products.price * item.quantity);
+      } else if (item && item.product && typeof item.product.price === 'number' && typeof item.quantity === 'number') {
+        // Support both data structures (from localStorage and Supabase)
+        return total + (item.product.price * item.quantity);
       }
       return total;
     }, 0);
@@ -194,22 +226,26 @@ const Cart = () => {
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="divide-y divide-gray-200">
-                  {cartItems.map((item) => (
-                    item.products && (
+                  {cartItems.map((item) => {
+                    // Handle both data structures: from localStorage (item.product) or Supabase (item.products)
+                    const productData = item.products || item.product;
+                    if (!productData) return null;
+                    
+                    return (
                       <CartItem
-                        key={item.products.id}
-                        id={item.products.id}
-                        name={item.products.name || 'Product Name Unavailable'}
-                        price={typeof item.products.price === 'number' ? item.products.price : 0}
-                        image={item.products.image || ''}
+                        key={productData.id}
+                        id={productData.id}
+                        name={productData.name || 'Product Name Unavailable'}
+                        price={typeof productData.price === 'number' ? productData.price : 0}
+                        image={productData.image || ''}
                         quantity={item.quantity || 1}
                         onRemove={handleRemoveItem}
                         onUpdateQuantity={handleUpdateQuantity}
-                        color={item.selected_color}
-                        size={item.selected_size}
+                        color={item.selected_color || item.selectedColor}
+                        size={item.selected_size || item.selectedSize?.name}
                       />
-                    )
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
               

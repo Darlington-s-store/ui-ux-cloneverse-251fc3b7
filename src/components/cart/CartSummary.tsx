@@ -18,12 +18,12 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
   const [showCouponInput, setShowCouponInput] = useState(false);
   
   // Calculate total with discount - ensure we have valid numbers
-  const safeSubtotal = typeof subtotal === 'number' ? subtotal : 0;
-  const safeDiscount = typeof discount === 'number' ? discount : 0;
+  const safeSubtotal = typeof subtotal === 'number' && !isNaN(subtotal) ? subtotal : 0;
+  const safeDiscount = typeof discount === 'number' && !isNaN(discount) ? discount : 0;
   const discountedSubtotal = safeSubtotal - safeDiscount;
   
   // Calculate final total
-  const calculatedTotal = typeof shipping === 'number' 
+  const calculatedTotal = typeof shipping === 'number' && !isNaN(shipping)
     ? discountedSubtotal + shipping 
     : discountedSubtotal;
   

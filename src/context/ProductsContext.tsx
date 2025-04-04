@@ -90,6 +90,13 @@ const productsReducer = (state: ProductsState, action: ProductsAction): Products
   switch (action.type) {
     case 'ADD_TO_CART': {
       const { product, quantity = 1, selectedSize, selectedColor } = action.payload;
+      
+      // Validate product data before adding to cart
+      if (!product || !product.id || typeof product.price !== 'number') {
+        console.error("Invalid product data:", product);
+        return state;
+      }
+      
       const existingItemIndex = state.cartItems.findIndex(item => item.product.id === product.id);
       
       if (existingItemIndex !== -1) {
@@ -98,21 +105,23 @@ const productsReducer = (state: ProductsState, action: ProductsAction): Products
         updatedCartItems[existingItemIndex].quantity += quantity;
         return { ...state, cartItems: updatedCartItems };
       } else {
-        // Add new item to cart
+        // Add new item to cart with proper structure
+        const newCartItem = { 
+          product, 
+          quantity, 
+          selectedSize, 
+          selectedColor,
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          color: selectedColor,
+          size: selectedSize?.name
+        };
+        
         return { 
           ...state, 
-          cartItems: [...state.cartItems, { 
-            product, 
-            quantity, 
-            selectedSize, 
-            selectedColor,
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            image: product.image,
-            color: selectedColor,
-            size: selectedSize?.name
-          }] 
+          cartItems: [...state.cartItems, newCartItem] 
         };
       }
     }
@@ -211,45 +220,62 @@ export const ProductsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   
   // Load state from localStorage
   useEffect(() => {
-    const savedCart = localStorage.getItem('cartItems');
-    const savedWishlist = localStorage.getItem('wishlistItems');
-    const savedOrders = localStorage.getItem('orders');
-    
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      parsedCart.forEach((item: CartItem) => {
-        dispatch({
-          type: 'ADD_TO_CART',
-          payload: {
-            product: item.product,
-            quantity: item.quantity,
-            selectedSize: item.selectedSize,
-            selectedColor: item.selectedColor
-          }
+    try {
+      const savedCart = localStorage.getItem('cartItems');
+      const savedWishlist = localStorage.getItem('wishlistItems');
+      const savedOrders = localStorage.getItem('orders');
+      
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        // Filter out invalid cart items before loading
+        const validCartItems = Array.isArray(parsedCart) ? parsedCart.filter(item => 
+          item && item.product && item.product.id && typeof item.product.price === 'number'
+        ) : [];
+        
+        if (validCartItems.length > 0) {
+          validCartItems.forEach((item) => {
+            if (item && item.product) {
+              dispatch({
+                type: 'ADD_TO_CART',
+                payload: {
+                  product: item.product,
+                  quantity: item.quantity,
+                  selectedSize: item.selectedSize,
+                  selectedColor: item.selectedColor
+                }
+              });
+            }
+          });
+        }
+      }
+      
+      if (savedWishlist) {
+        const parsedWishlist = JSON.parse(savedWishlist);
+        parsedWishlist.forEach((item: WishlistItem) => {
+          dispatch({ type: 'ADD_TO_WISHLIST', payload: item.product });
         });
-      });
-    }
-    
-    if (savedWishlist) {
-      const parsedWishlist = JSON.parse(savedWishlist);
-      parsedWishlist.forEach((item: WishlistItem) => {
-        dispatch({ type: 'ADD_TO_WISHLIST', payload: item.product });
-      });
-    }
-    
-    if (savedOrders) {
-      const parsedOrders = JSON.parse(savedOrders);
-      parsedOrders.forEach((order: Order) => {
-        dispatch({ type: 'PLACE_ORDER', payload: order });
-      });
+      }
+      
+      if (savedOrders) {
+        const parsedOrders = JSON.parse(savedOrders);
+        parsedOrders.forEach((order: Order) => {
+          dispatch({ type: 'PLACE_ORDER', payload: order });
+        });
+      }
+    } catch (error) {
+      console.error("Error loading state from localStorage:", error);
     }
   }, []);
   
   // Save state to localStorage when it changes
   useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
-    localStorage.setItem('wishlistItems', JSON.stringify(state.wishlistItems));
-    localStorage.setItem('orders', JSON.stringify(state.orders));
+    try {
+      localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
+      localStorage.setItem('wishlistItems', JSON.stringify(state.wishlistItems));
+      localStorage.setItem('orders', JSON.stringify(state.orders));
+    } catch (error) {
+      console.error("Error saving state to localStorage:", error);
+    }
   }, [state.cartItems, state.wishlistItems, state.orders]);
   
   // Actions
