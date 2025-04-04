@@ -39,6 +39,7 @@ const Cart = () => {
                 return item && item.product && item.product.id && typeof item.product.price === 'number';
               }) : [];
               
+              console.log("Loaded cart items from localStorage:", validCartItems);
               setCartItems(validCartItems);
             } catch (error) {
               console.error("Error parsing cart from localStorage:", error);
@@ -85,6 +86,8 @@ const Cart = () => {
         throw error;
       }
       
+      console.log("Fetched cart items from Supabase:", data);
+      
       // Process cart items to ensure they have the structure expected by CartItem component
       const processedCartItems = (data || []).map(item => {
         // Make sure we have product information
@@ -94,6 +97,12 @@ const Cart = () => {
           
           return {
             id: item.id,
+            product: {
+              id: product.id,
+              name: product.name,
+              price: product.price,
+              image: product.image
+            },
             products: {
               id: product.id,
               name: product.name,
@@ -106,9 +115,13 @@ const Cart = () => {
           };
         }
         
-        return item;
+        return {
+          ...item,
+          product: item.products // Add product property for compatibility
+        };
       }).filter(Boolean); // Remove any nulls
       
+      console.log("Processed cart items:", processedCartItems);
       setCartItems(processedCartItems);
     } catch (error: any) {
       console.error('Error fetching cart:', error);
@@ -118,8 +131,20 @@ const Cart = () => {
   
   const handleRemoveItem = async (productId: string) => {
     try {
-      const item = cartItems.find(item => (item.products?.id === productId) || (item.product?.id === productId));
-      if (!item) return;
+      console.log("Removing item with productId:", productId);
+      
+      // Find the item to be removed
+      const item = cartItems.find(item => {
+        const itemProductId = item.products?.id || item.product?.id;
+        return itemProductId === productId;
+      });
+      
+      if (!item) {
+        console.error("Item not found for removal", productId);
+        return;
+      }
+      
+      console.log("Found item to remove:", item);
       
       if (user) {
         // Remove from database if logged in
@@ -131,15 +156,18 @@ const Cart = () => {
         if (error) throw error;
       } else {
         // Remove from localStorage if not logged in
-        const updatedCart = cartItems.filter(i => 
-          (i.products?.id !== productId) && (i.product?.id !== productId)
-        );
+        const updatedCart = cartItems.filter(i => {
+          const itemProductId = i.products?.id || i.product?.id;
+          return itemProductId !== productId;
+        });
         localStorage.setItem('cartItems', JSON.stringify(updatedCart));
       }
       
-      setCartItems(prev => prev.filter(i => 
-        (i.products?.id !== productId) && (i.product?.id !== productId)
-      ));
+      // Update state
+      setCartItems(prev => prev.filter(i => {
+        const itemProductId = i.products?.id || i.product?.id;
+        return itemProductId !== productId;
+      }));
       
       const productName = item.products?.name || item.product?.name || 'Item';
       toast.success(`${productName} removed from cart`);
@@ -151,11 +179,18 @@ const Cart = () => {
   
   const handleUpdateQuantity = async (productId: string, quantity: number) => {
     try {
-      const itemIndex = cartItems.findIndex(item => 
-        (item.products?.id === productId) || (item.product?.id === productId)
-      );
+      console.log("Updating quantity for productId:", productId, "New quantity:", quantity);
       
-      if (itemIndex === -1) return;
+      // Find the item to update
+      const itemIndex = cartItems.findIndex(item => {
+        const itemProductId = item.products?.id || item.product?.id;
+        return itemProductId === productId;
+      });
+      
+      if (itemIndex === -1) {
+        console.error("Item not found for quantity update", productId);
+        return;
+      }
       
       if (user) {
         // Update in database if logged in
@@ -223,6 +258,8 @@ const Cart = () => {
     );
   }
   
+  console.log("Rendering cart with items:", cartItems);
+  
   return (
     <Layout>
       <Breadcrumb 
@@ -256,7 +293,10 @@ const Cart = () => {
                   {cartItems.map((item) => {
                     // Handle both data structures: from localStorage (item.product) or Supabase (item.products)
                     const productData = item.products || item.product;
-                    if (!productData || !productData.id) return null;
+                    if (!productData || !productData.id) {
+                      console.error("Invalid product data in cart item:", item);
+                      return null;
+                    }
                     
                     return (
                       <CartItem
