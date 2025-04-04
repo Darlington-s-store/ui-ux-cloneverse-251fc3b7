@@ -11,12 +11,13 @@ const SignupForm: React.FC = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    agreeTerms: false
+    acceptTerms: false
   });
   
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { signUp } = useAuth();
+  const { signUp, signInWithGoogle } = useAuth();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -29,8 +30,8 @@ const SignupForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
+    // Simple validation
+    if (!formData.email || !formData.password || !formData.confirmPassword) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -40,28 +41,34 @@ const SignupForm: React.FC = () => {
       return;
     }
     
-    if (!formData.agreeTerms) {
-      toast.error('You must agree to the terms and conditions');
+    if (!formData.acceptTerms) {
+      toast.error('Please accept the terms and conditions');
       return;
     }
     
     setIsLoading(true);
     
     try {
-      await signUp(
-        formData.email, 
-        formData.password,
-        formData.firstName,
-        formData.lastName
-      );
-      
-      // Navigate to login after successful signup
+      await signUp(formData.email, formData.password, formData.firstName, formData.lastName);
       navigate('/login');
     } catch (error) {
       // Error is handled in the auth context
       console.error('Signup error:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+      // No navigation needed as the OAuth redirect will handle this
+    } catch (error) {
+      // Error is handled in the auth context
+      console.error('Google login error:', error);
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
   
@@ -80,7 +87,6 @@ const SignupForm: React.FC = () => {
               className="input-primary"
               value={formData.firstName}
               onChange={handleChange}
-              required
             />
           </div>
           <div>
@@ -91,7 +97,6 @@ const SignupForm: React.FC = () => {
               className="input-primary"
               value={formData.lastName}
               onChange={handleChange}
-              required
             />
           </div>
         </div>
@@ -135,15 +140,15 @@ const SignupForm: React.FC = () => {
         <div className="flex items-center">
           <input
             type="checkbox"
-            name="agreeTerms"
-            id="agreeTerms"
-            checked={formData.agreeTerms}
+            name="acceptTerms"
+            id="acceptTerms"
+            checked={formData.acceptTerms}
             onChange={handleChange}
             className="h-4 w-4 text-exclusive border-gray-300 rounded focus:ring-exclusive"
             required
           />
-          <label htmlFor="agreeTerms" className="ml-2 block text-sm text-gray-700">
-            I agree to the <Link to="/terms" className="text-exclusive hover:underline">Terms & Conditions</Link>
+          <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-700">
+            I agree to the <Link to="/terms" className="text-exclusive hover:underline">Terms and Conditions</Link>
           </label>
         </div>
         
@@ -157,11 +162,12 @@ const SignupForm: React.FC = () => {
         
         <button 
           type="button" 
+          onClick={handleGoogleSignIn}
           className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
-          disabled={isLoading}
+          disabled={isGoogleLoading}
         >
           <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-          <span>Sign up with Google</span>
+          <span>{isGoogleLoading ? 'Connecting...' : 'Sign in with Google'}</span>
         </button>
         
         <div className="text-center">

@@ -12,8 +12,9 @@ const LoginForm: React.FC = () => {
   });
   
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
-  const { signIn } = useAuth();
+  const { signIn, signInWithGoogle } = useAuth();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -42,6 +43,19 @@ const LoginForm: React.FC = () => {
       console.error('Login error:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+      // No navigation needed as the OAuth redirect will handle this
+    } catch (error) {
+      // Error is handled in the auth context
+      console.error('Google login error:', error);
+    } finally {
+      setIsGoogleLoading(false);
     }
   };
   
@@ -105,11 +119,12 @@ const LoginForm: React.FC = () => {
         
         <button 
           type="button" 
+          onClick={handleGoogleSignIn}
           className="w-full py-2 px-4 bg-white border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
-          disabled={isLoading}
+          disabled={isGoogleLoading}
         >
           <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-          <span>Sign in with Google</span>
+          <span>{isGoogleLoading ? 'Connecting...' : 'Sign in with Google'}</span>
         </button>
         
         <div className="text-center">
