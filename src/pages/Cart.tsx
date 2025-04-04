@@ -19,34 +19,50 @@ const Cart = () => {
   const { getProductById } = useProducts();
   
   useEffect(() => {
-    if (user) {
-      fetchCart();
-    } else if (!authLoading && !user) {
-      // Check from localStorage if not logged in
-      // This is a fallback for guest users
-      const savedCart = localStorage.getItem('cartItems');
-      if (savedCart) {
-        try {
-          const parsedCart = JSON.parse(savedCart);
-          // Ensure we have valid cart items with product data
-          const validCartItems = Array.isArray(parsedCart) ? parsedCart.filter(item => {
-            return item && item.product && item.product.id && typeof item.product.price === 'number';
-          }) : [];
-          
-          setCartItems(validCartItems);
-        } catch (error) {
-          console.error("Error parsing cart from localStorage:", error);
-          setCartItems([]);
+    if (authLoading) return; // Don't do anything while auth is loading
+    
+    const loadCart = async () => {
+      setIsCartLoading(true);
+      
+      try {
+        if (user) {
+          // If user is logged in, fetch from Supabase
+          await fetchCart();
+        } else {
+          // If not logged in, use localStorage
+          const savedCart = localStorage.getItem('cartItems');
+          if (savedCart) {
+            try {
+              const parsedCart = JSON.parse(savedCart);
+              // Ensure we have valid cart items with product data
+              const validCartItems = Array.isArray(parsedCart) ? parsedCart.filter(item => {
+                return item && item.product && item.product.id && typeof item.product.price === 'number';
+              }) : [];
+              
+              setCartItems(validCartItems);
+            } catch (error) {
+              console.error("Error parsing cart from localStorage:", error);
+              setCartItems([]);
+            }
+          } else {
+            setCartItems([]); // Empty cart if nothing in localStorage
+          }
         }
+      } catch (error) {
+        console.error("Error loading cart:", error);
+        toast.error("Failed to load your cart. Please try refreshing the page.");
+      } finally {
+        setIsCartLoading(false);
       }
-      setIsCartLoading(false);
-    }
+    };
+    
+    loadCart();
   }, [user, authLoading]);
   
   const fetchCart = async () => {
+    if (!user) return;
+    
     try {
-      setIsCartLoading(true);
-      
       // Fetch cart items with product details
       const { data, error } = await supabase
         .from('cart_items')
@@ -63,9 +79,11 @@ const Cart = () => {
             image
           )
         `)
-        .eq('user_id', user?.id);
+        .eq('user_id', user.id);
         
-      if (error) throw error;
+      if (error) {
+        throw error;
+      }
       
       // Process cart items to ensure they have the structure expected by CartItem component
       const processedCartItems = (data || []).map(item => {
@@ -82,7 +100,7 @@ const Cart = () => {
               price: product.price,
               image: product.image
             },
-            quantity: item.quantity,
+            quantity: item.quantity || 1,
             selected_color: item.selected_color,
             selected_size: item.selected_size
           };
@@ -95,14 +113,12 @@ const Cart = () => {
     } catch (error: any) {
       console.error('Error fetching cart:', error);
       toast.error(error.message || 'Failed to load cart');
-    } finally {
-      setIsCartLoading(false);
     }
   };
   
   const handleRemoveItem = async (productId: string) => {
     try {
-      const item = cartItems.find(item => item.products?.id === productId);
+      const item = cartItems.find(item => (item.products?.id === productId) || (item.product?.id === productId));
       if (!item) return;
       
       if (user) {
@@ -115,12 +131,18 @@ const Cart = () => {
         if (error) throw error;
       } else {
         // Remove from localStorage if not logged in
-        const updatedCart = cartItems.filter(i => i.products?.id !== productId);
+        const updatedCart = cartItems.filter(i => 
+          (i.products?.id !== productId) && (i.product?.id !== productId)
+        );
         localStorage.setItem('cartItems', JSON.stringify(updatedCart));
       }
       
-      setCartItems(prev => prev.filter(i => i.products?.id !== productId));
-      toast.success(`${item.products?.name || 'Item'} removed from cart`);
+      setCartItems(prev => prev.filter(i => 
+        (i.products?.id !== productId) && (i.product?.id !== productId)
+      ));
+      
+      const productName = item.products?.name || item.product?.name || 'Item';
+      toast.success(`${productName} removed from cart`);
     } catch (error: any) {
       console.error('Error removing from cart:', error);
       toast.error(error.message || 'Failed to remove from cart');
@@ -129,7 +151,10 @@ const Cart = () => {
   
   const handleUpdateQuantity = async (productId: string, quantity: number) => {
     try {
-      const itemIndex = cartItems.findIndex(item => item.products?.id === productId);
+      const itemIndex = cartItems.findIndex(item => 
+        (item.products?.id === productId) || (item.product?.id === productId)
+      );
+      
       if (itemIndex === -1) return;
       
       if (user) {
@@ -171,13 +196,15 @@ const Cart = () => {
     if (!cartItems || cartItems.length === 0) return 0;
     
     return cartItems.reduce((total, item) => {
-      // Check if product and price exist before adding to total
+      // Support both data structures (from localStorage and Supabase)
       if (item && item.products && typeof item.products.price === 'number' && typeof item.quantity === 'number') {
         return total + (item.products.price * item.quantity);
-      } else if (item && item.product && typeof item.product.price === 'number' && typeof item.quantity === 'number') {
-        // Support both data structures (from localStorage and Supabase)
+      } 
+      
+      if (item && item.product && typeof item.product.price === 'number' && typeof item.quantity === 'number') {
         return total + (item.product.price * item.quantity);
       }
+      
       return total;
     }, 0);
   };
@@ -229,7 +256,7 @@ const Cart = () => {
                   {cartItems.map((item) => {
                     // Handle both data structures: from localStorage (item.product) or Supabase (item.products)
                     const productData = item.products || item.product;
-                    if (!productData) return null;
+                    if (!productData || !productData.id) return null;
                     
                     return (
                       <CartItem
@@ -242,7 +269,7 @@ const Cart = () => {
                         onRemove={handleRemoveItem}
                         onUpdateQuantity={handleUpdateQuantity}
                         color={item.selected_color || item.selectedColor}
-                        size={item.selected_size || item.selectedSize?.name}
+                        size={item.selected_size || (item.selectedSize?.name)}
                       />
                     );
                   })}

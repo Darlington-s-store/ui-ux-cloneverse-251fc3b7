@@ -23,9 +23,9 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
   const discountedSubtotal = safeSubtotal - safeDiscount;
   
   // Calculate final total
-  const calculatedTotal = typeof shipping === 'number' && !isNaN(shipping)
-    ? discountedSubtotal + shipping 
-    : discountedSubtotal;
+  const calculatedTotal = typeof shipping === 'number' ? 
+    discountedSubtotal + shipping : 
+    discountedSubtotal;
   
   // Use the calculated total as a fallback if provided total is invalid
   const displayTotal = typeof total === 'number' && !isNaN(total) ? total : calculatedTotal;
@@ -37,7 +37,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
     }
     
     // Example coupon validation (in a real app, this would be server-side)
-    const validCoupons = {
+    const validCoupons: Record<string, number> = {
       'SAVE10': 10,
       'SAVE20': 20,
       'SAVE30': 30
@@ -45,8 +45,8 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
     
     const couponKey = couponCode.toUpperCase();
     
-    if (validCoupons[couponKey as keyof typeof validCoupons]) {
-      const discountPercentage = validCoupons[couponKey as keyof typeof validCoupons];
+    if (validCoupons[couponKey]) {
+      const discountPercentage = validCoupons[couponKey];
       const discountAmount = (safeSubtotal * discountPercentage) / 100;
       
       setDiscount(discountAmount);
