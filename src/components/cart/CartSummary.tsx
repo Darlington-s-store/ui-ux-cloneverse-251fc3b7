@@ -17,11 +17,18 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
   const [appliedCoupon, setAppliedCoupon] = useState('');
   const [showCouponInput, setShowCouponInput] = useState(false);
   
-  // Calculate total with discount
-  const discountedSubtotal = subtotal - discount;
+  // Calculate total with discount - ensure we have valid numbers
+  const safeSubtotal = typeof subtotal === 'number' ? subtotal : 0;
+  const safeDiscount = typeof discount === 'number' ? discount : 0;
+  const discountedSubtotal = safeSubtotal - safeDiscount;
+  
+  // Calculate final total
   const calculatedTotal = typeof shipping === 'number' 
     ? discountedSubtotal + shipping 
     : discountedSubtotal;
+  
+  // Use the calculated total as a fallback if provided total is invalid
+  const displayTotal = typeof total === 'number' && !isNaN(total) ? total : calculatedTotal;
   
   const handleCouponApply = () => {
     if (!couponCode.trim()) {
@@ -40,7 +47,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
     
     if (validCoupons[couponKey as keyof typeof validCoupons]) {
       const discountPercentage = validCoupons[couponKey as keyof typeof validCoupons];
-      const discountAmount = (subtotal * discountPercentage) / 100;
+      const discountAmount = (safeSubtotal * discountPercentage) / 100;
       
       setDiscount(discountAmount);
       setAppliedCoupon(couponCode);
@@ -72,7 +79,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
       <div className="border-b border-gray-200 pb-4 mb-4">
         <div className="flex justify-between mb-3">
           <span className="text-gray-600">Subtotal:</span>
-          <span className="font-medium">${subtotal.toFixed(2)}</span>
+          <span className="font-medium">${safeSubtotal.toFixed(2)}</span>
         </div>
         
         {discount > 0 && (
@@ -81,14 +88,14 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
               <CheckCircle size={16} className="mr-1" />
               Discount ({appliedCoupon}):
             </span>
-            <span className="font-medium">-${discount.toFixed(2)}</span>
+            <span className="font-medium">-${safeDiscount.toFixed(2)}</span>
           </div>
         )}
         
         <div className="flex justify-between">
           <span className="text-gray-600">Shipping:</span>
           <span className="font-medium">
-            {shipping === 'Free' ? 'Free' : `$${shipping.toFixed(2)}`}
+            {shipping === 'Free' ? 'Free' : `$${typeof shipping === 'number' ? shipping.toFixed(2) : '0.00'}`}
           </span>
         </div>
       </div>
@@ -139,7 +146,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ subtotal, shipping, total, on
       
       <div className="flex justify-between mb-6">
         <span className="text-gray-800 font-medium">Total:</span>
-        <span className="text-gray-800 font-semibold">${total.toFixed(2)}</span>
+        <span className="text-gray-800 font-semibold">${displayTotal.toFixed(2)}</span>
       </div>
       
       {onCheckout ? (

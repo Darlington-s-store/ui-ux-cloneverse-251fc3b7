@@ -25,7 +25,13 @@ const Cart = () => {
       // This is a fallback for guest users
       const savedCart = localStorage.getItem('cartItems');
       if (savedCart) {
-        setCartItems(JSON.parse(savedCart));
+        try {
+          const parsedCart = JSON.parse(savedCart);
+          setCartItems(Array.isArray(parsedCart) ? parsedCart : []);
+        } catch (error) {
+          console.error("Error parsing cart from localStorage:", error);
+          setCartItems([]);
+        }
       }
       setIsCartLoading(false);
     }
@@ -54,7 +60,9 @@ const Cart = () => {
         
       if (error) throw error;
       
-      setCartItems(data || []);
+      // Filter out any items with missing product data
+      const validCartItems = (data || []).filter(item => item.products && item.products.price);
+      setCartItems(validCartItems);
     } catch (error: any) {
       console.error('Error fetching cart:', error);
       toast.error(error.message || 'Failed to load cart');
@@ -65,7 +73,7 @@ const Cart = () => {
   
   const handleRemoveItem = async (productId: string) => {
     try {
-      const item = cartItems.find(item => item.products.id === productId);
+      const item = cartItems.find(item => item.products?.id === productId);
       if (!item) return;
       
       if (user) {
@@ -78,12 +86,12 @@ const Cart = () => {
         if (error) throw error;
       } else {
         // Remove from localStorage if not logged in
-        const updatedCart = cartItems.filter(i => i.products.id !== productId);
+        const updatedCart = cartItems.filter(i => i.products?.id !== productId);
         localStorage.setItem('cartItems', JSON.stringify(updatedCart));
       }
       
-      setCartItems(prev => prev.filter(i => i.products.id !== productId));
-      toast.success(`${item.products.name} removed from cart`);
+      setCartItems(prev => prev.filter(i => i.products?.id !== productId));
+      toast.success(`${item.products?.name || 'Item'} removed from cart`);
     } catch (error: any) {
       console.error('Error removing from cart:', error);
       toast.error(error.message || 'Failed to remove from cart');
@@ -92,7 +100,7 @@ const Cart = () => {
   
   const handleUpdateQuantity = async (productId: string, quantity: number) => {
     try {
-      const itemIndex = cartItems.findIndex(item => item.products.id === productId);
+      const itemIndex = cartItems.findIndex(item => item.products?.id === productId);
       if (itemIndex === -1) return;
       
       if (user) {
@@ -131,8 +139,14 @@ const Cart = () => {
   };
   
   const getCartTotal = () => {
+    if (!cartItems || cartItems.length === 0) return 0;
+    
     return cartItems.reduce((total, item) => {
-      return total + (item.products.price * item.quantity);
+      // Check if product and price exist before adding to total
+      if (item && item.products && typeof item.products.price === 'number' && typeof item.quantity === 'number') {
+        return total + (item.products.price * item.quantity);
+      }
+      return total;
     }, 0);
   };
   
@@ -181,18 +195,20 @@ const Cart = () => {
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <div className="divide-y divide-gray-200">
                   {cartItems.map((item) => (
-                    <CartItem
-                      key={item.products.id}
-                      id={item.products.id}
-                      name={item.products.name}
-                      price={item.products.price}
-                      image={item.products.image}
-                      quantity={item.quantity}
-                      onRemove={handleRemoveItem}
-                      onUpdateQuantity={handleUpdateQuantity}
-                      color={item.selected_color}
-                      size={item.selected_size}
-                    />
+                    item.products && (
+                      <CartItem
+                        key={item.products.id}
+                        id={item.products.id}
+                        name={item.products.name || 'Product Name Unavailable'}
+                        price={typeof item.products.price === 'number' ? item.products.price : 0}
+                        image={item.products.image || ''}
+                        quantity={item.quantity || 1}
+                        onRemove={handleRemoveItem}
+                        onUpdateQuantity={handleUpdateQuantity}
+                        color={item.selected_color}
+                        size={item.selected_size}
+                      />
+                    )
                   ))}
                 </div>
               </div>
@@ -213,7 +229,7 @@ const Cart = () => {
             <div className="lg:col-span-1">
               <CartSummary
                 subtotal={cartSubtotal}
-                shipping={shipping}
+                shipping={'Free'}
                 total={cartTotal}
                 onCheckout={handleCheckout}
               />
